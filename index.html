@@ -1153,6 +1153,21 @@
             image-rendering: pixelated;
             -ms-interpolation-mode: nearest-neighbor;
         }
+        
+        /* 4x6 aspect ratio guide */
+        .aspect-ratio-guide {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            height: 52.5%; /* 4:6 = 2:3 aspect ratio */
+            border: 2px solid rgba(212, 175, 55, 0.5);
+            border-radius: 5px;
+            z-index: 1;
+            pointer-events: none;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.3);
+        }
     </style>
 </head>
 <body class="scroll-container hide-scrollbar">
@@ -1174,7 +1189,7 @@
         
         <!-- Camera Section -->
         <div class="camera-container">
-            <div class="camera-guide"></div>
+            <div class="aspect-ratio-guide" id="aspect-ratio-guide"></div>
             <div class="premium-frame"></div>
             <div class="frame-corner corner-tl"></div>
             <div class="frame-corner corner-tr"></div>
@@ -1323,7 +1338,7 @@
         const downloadBtn = document.getElementById('download-btn');
         const resetBtn = document.getElementById('reset-btn');
         const flashEffect = document.getElementById('flash-effect');
-        const cameraGuide = document.querySelector('.camera-guide');
+        const aspectRatioGuide = document.getElementById('aspect-ratio-guide');
         const toast = document.getElementById('toast');
         const celebrationText = document.getElementById('celebration-text');
         const yearDisplay = document.getElementById('year-display');
@@ -1605,7 +1620,7 @@
             }
         }
         
-        // Capture photo with optimized ratio - FIXED for iOS and mobile
+        // Capture photo with perfect 4x6 aspect ratio - UPDATED
         function capturePhoto() {
             if (!cameraReady) {
                 showToast('Camera is not ready yet. Please wait...', 2000);
@@ -1635,124 +1650,127 @@
             }
             
             const canvas = document.createElement('canvas');
-            // Use 4:3 ratio for standard photo print
-            const targetWidth = 1200;
-            const targetHeight = 900;
-            canvas.width = targetWidth;
-            canvas.height = targetHeight;
+            // 4x6 aspect ratio at high resolution for print quality
+            canvas.width = 2400;  // 4 inches * 600 DPI
+            canvas.height = 3600; // 6 inches * 600 DPI
             
             const context = canvas.getContext('2d');
             
-            // Draw video frame centered and cropped to 4:3 ratio
-            const videoAspect = cameraView.videoWidth / cameraView.videoHeight;
-            const targetAspect = targetWidth / targetHeight;
+            // Calculate source dimensions to maintain 4x6 aspect ratio without stretching
+            const sourceAspect = cameraView.videoWidth / cameraView.videoHeight;
+            const targetAspect = 4/6; // 4x6 aspect ratio
             
             let sourceX = 0;
             let sourceY = 0;
             let sourceWidth = cameraView.videoWidth;
             let sourceHeight = cameraView.videoHeight;
             
-            if (videoAspect > targetAspect) {
-                // Video is wider than target, crop sides
-                sourceWidth = cameraView.videoHeight * targetAspect;
+            if (sourceAspect > targetAspect) {
+                // Source is wider than target aspect ratio
+                sourceHeight = cameraView.videoHeight;
+                sourceWidth = sourceHeight * targetAspect;
                 sourceX = (cameraView.videoWidth - sourceWidth) / 2;
             } else {
-                // Video is taller than target, crop top/bottom
-                sourceHeight = cameraView.videoWidth / targetAspect;
+                // Source is taller than target aspect ratio
+                sourceWidth = cameraView.videoWidth;
+                sourceHeight = sourceWidth / targetAspect;
                 sourceY = (cameraView.videoHeight - sourceHeight) / 2;
             }
             
-            // Draw the video frame
-            context.drawImage(cameraView, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, targetWidth, targetHeight);
+            // Draw the video frame centered and cropped to 4x6 ratio WITHOUT stretching
+            context.drawImage(
+                cameraView, 
+                sourceX, sourceY, sourceWidth, sourceHeight,  // Source rectangle (cropped)
+                0, 0, canvas.width, canvas.height              // Destination rectangle (full canvas)
+            );
             
             // Apply selected filter
-            applyFilterToCanvas(context, targetWidth, targetHeight);
+            applyFilterToCanvas(context, canvas.width, canvas.height);
             
             // Apply selected overlay to the captured photo
-            applyOverlayToCanvas(context, targetWidth, targetHeight);
+            applyOverlayToCanvas(context, canvas.width, canvas.height);
             
             // Add premium frame effect
             context.strokeStyle = '#D4AF37';
-            context.lineWidth = 8;
-            context.strokeRect(15, 15, targetWidth - 30, targetHeight - 30);
+            context.lineWidth = 20;
+            context.strokeRect(30, 30, canvas.width - 60, canvas.height - 60);
             
             // Add corner decorations
-            const cornerSize = 30;
+            const cornerSize = 60;
             context.strokeStyle = '#D4AF37';
-            context.lineWidth = 4;
+            context.lineWidth = 8;
             
             // Top-left corner
             context.beginPath();
-            context.moveTo(15, 15 + cornerSize);
-            context.lineTo(15, 15);
-            context.lineTo(15 + cornerSize, 15);
+            context.moveTo(30, 30 + cornerSize);
+            context.lineTo(30, 30);
+            context.lineTo(30 + cornerSize, 30);
             context.stroke();
             
             // Top-right corner
             context.beginPath();
-            context.moveTo(targetWidth - 15 - cornerSize, 15);
-            context.lineTo(targetWidth - 15, 15);
-            context.lineTo(targetWidth - 15, 15 + cornerSize);
+            context.moveTo(canvas.width - 30 - cornerSize, 30);
+            context.lineTo(canvas.width - 30, 30);
+            context.lineTo(canvas.width - 30, 30 + cornerSize);
             context.stroke();
             
             // Bottom-left corner
             context.beginPath();
-            context.moveTo(15, targetHeight - 15 - cornerSize);
-            context.lineTo(15, targetHeight - 15);
-            context.lineTo(15 + cornerSize, targetHeight - 15);
+            context.moveTo(30, canvas.height - 30 - cornerSize);
+            context.lineTo(30, canvas.height - 30);
+            context.lineTo(30 + cornerSize, canvas.height - 30);
             context.stroke();
             
             // Bottom-right corner
             context.beginPath();
-            context.moveTo(targetWidth - 15 - cornerSize, targetHeight - 15);
-            context.lineTo(targetWidth - 15, targetHeight - 15);
-            context.lineTo(targetWidth - 15, targetHeight - 15 - cornerSize);
+            context.moveTo(canvas.width - 30 - cornerSize, canvas.height - 30);
+            context.lineTo(canvas.width - 30, canvas.height - 30);
+            context.lineTo(canvas.width - 30, canvas.height - 30 - cornerSize);
             context.stroke();
             
             // Add "Happy New Year" text with optimized positioning
-            context.font = 'bold 70px "Dancing Script", cursive';
+            context.font = 'bold 140px "Dancing Script", cursive';
             context.fillStyle = '#D4AF37';
             context.textAlign = 'center';
             context.shadowColor = 'rgba(0, 0, 0, 0.7)';
-            context.shadowBlur = 12;
-            context.fillText('Happy New Year', targetWidth / 2, targetHeight - 60);
+            context.shadowBlur = 15;
+            context.fillText('Happy New Year', canvas.width / 2, 300);
             context.shadowBlur = 0;
             
             // Add "2027" text
-            context.font = 'bold 90px "Playfair Display", serif';
+            context.font = 'bold 180px "Playfair Display", serif';
             context.fillStyle = '#D4AF37';
-            context.textAlign = 'right';
+            context.textAlign = 'center';
             context.shadowColor = 'rgba(0, 0, 0, 0.7)';
-            context.shadowBlur = 15;
-            context.fillText('2027', targetWidth - 40, targetHeight - 40);
+            context.shadowBlur = 20;
+            context.fillText('2027', canvas.width / 2, canvas.height - 200);
             context.shadowBlur = 0;
             
             // Add photo number with premium design
             context.fillStyle = 'rgba(0, 0, 0, 0.6)';
             context.beginPath();
-            context.arc(60, 60, 30, 0, Math.PI * 2);
+            context.arc(100, 100, 50, 0, Math.PI * 2);
             context.fill();
             
-            context.font = 'bold 25px Arial';
+            context.font = 'bold 40px Arial';
             context.fillStyle = '#D4AF37';
             context.textAlign = 'center';
             context.textBaseline = 'middle';
-            context.fillText(photoCount + 1, 60, 60);
+            context.fillText(photoCount + 1, 100, 100);
             
             // Add decorative element
-            context.font = '35px Arial';
+            context.font = '60px Arial';
             context.fillStyle = '#D4AF37';
-            context.fillText('★', 60, 110);
+            context.fillText('★', 100, 180);
             
             // Convert to data URL - Use JPEG for better compatibility
             let photoData;
             try {
-                // Lower quality for mobile performance
-                photoData = canvas.toDataURL('image/jpeg', 0.85);
+                // High quality for print
+                photoData = canvas.toDataURL('image/jpeg', 0.92);
             } catch (e) {
                 console.error('Error converting canvas to data URL:', e);
-                // Try with even lower quality
-                photoData = canvas.toDataURL('image/jpeg', 0.7);
+                photoData = canvas.toDataURL('image/jpeg', 0.85);
             }
             
             // Add to captured photos array
@@ -1760,7 +1778,9 @@
                 data: photoData,
                 filter: currentFilter,
                 overlay: currentOverlay,
-                timestamp: new Date().toLocaleTimeString()
+                timestamp: new Date().toLocaleTimeString(),
+                width: canvas.width,
+                height: canvas.height
             });
             
             photoCount++;
@@ -1789,10 +1809,10 @@
                     context.fillRect(0, 0, width, height);
                     break;
                 case 'sparkle':
-                    for (let i = 0; i < 30; i++) {
+                    for (let i = 0; i < 50; i++) {
                         const x = Math.random() * width;
                         const y = Math.random() * height;
-                        const radius = Math.random() * 4 + 2;
+                        const radius = Math.random() * 6 + 3;
                         
                         context.beginPath();
                         context.arc(x, y, radius, 0, Math.PI * 2);
@@ -1827,14 +1847,14 @@
         
         // Apply overlay to canvas
         function applyOverlayToCanvas(context, width, height) {
-            context.globalAlpha = 0.2;
+            context.globalAlpha = 0.15;
             
             switch(currentOverlay) {
                 case 'fireworks':
-                    for (let i = 0; i < 15; i++) {
+                    for (let i = 0; i < 25; i++) {
                         const x = Math.random() * width;
                         const y = Math.random() * height;
-                        const radius = Math.random() * 30 + 10;
+                        const radius = Math.random() * 50 + 20;
                         const colors = ['#D4AF37', '#FFD700', '#FF6347', '#1E90FF'];
                         const color = colors[Math.floor(Math.random() * colors.length)];
                         
@@ -1846,10 +1866,10 @@
                     break;
                     
                 case 'confetti':
-                    for (let i = 0; i < 40; i++) {
+                    for (let i = 0; i < 60; i++) {
                         const x = Math.random() * width;
                         const y = Math.random() * height;
-                        const size = Math.random() * 15 + 6;
+                        const size = Math.random() * 25 + 10;
                         const colors = ['#D4AF37', '#FFD700', '#FF6347', '#1E90FF', '#32CD32'];
                         const color = colors[Math.floor(Math.random() * colors.length)];
                         
@@ -1867,19 +1887,19 @@
                     
                 case 'gold':
                     const goldGradient = context.createLinearGradient(0, 0, width, height);
-                    goldGradient.addColorStop(0, 'rgba(212, 175, 55, 0.2)');
-                    goldGradient.addColorStop(0.5, 'rgba(255, 215, 0, 0.2)');
-                    goldGradient.addColorStop(1, 'rgba(255, 140, 0, 0.2)');
+                    goldGradient.addColorStop(0, 'rgba(212, 175, 55, 0.15)');
+                    goldGradient.addColorStop(0.5, 'rgba(255, 215, 0, 0.15)');
+                    goldGradient.addColorStop(1, 'rgba(255, 140, 0, 0.15)');
                     
                     context.fillStyle = goldGradient;
                     context.fillRect(0, 0, width, height);
                     break;
                     
                 case 'sparkle':
-                    for (let i = 0; i < 80; i++) {
+                    for (let i = 0; i < 120; i++) {
                         const x = Math.random() * width;
                         const y = Math.random() * height;
-                        const radius = Math.random() * 3 + 1;
+                        const radius = Math.random() * 5 + 2;
                         
                         context.beginPath();
                         context.arc(x, y, radius, 0, Math.PI * 2);
@@ -2173,24 +2193,24 @@
             });
         }
         
-        // Download optimized collage with perfect ratio
+        // Download collage with perfect 4x6 size - UPDATED
         function downloadCollage() {
             if (capturedPhotos.length < 4) {
                 showToast('Please capture 4 photos first!', 2000);
                 return;
             }
             
-            showToast('Creating your premium collage...', 1500);
+            showToast('Creating your premium 4x6 collage...', 1500);
             
             // Create canvas for final image
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
             
-            // Optimized ratio for printing (4:3 ratio - standard photo size)
-            canvas.width = 2400;  // 8 inches * 300 DPI
-            canvas.height = 1800; // 6 inches * 300 DPI (4:3 ratio)
+            // EXACT 4x6 inch dimensions at 300 DPI for perfect printing
+            canvas.width = 1200;  // 4 inches * 300 DPI
+            canvas.height = 1800; // 6 inches * 300 DPI
             
-            // Draw optimized background
+            // Draw background
             const backgroundGradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
             backgroundGradient.addColorStop(0, '#0a0e1a');
             backgroundGradient.addColorStop(0.5, '#1a2b5a');
@@ -2199,8 +2219,8 @@
             context.fillRect(0, 0, canvas.width, canvas.height);
             
             // Add subtle texture
-            context.globalAlpha = 0.02;
-            for (let i = 0; i < 800; i++) {
+            context.globalAlpha = 0.03;
+            for (let i = 0; i < 400; i++) {
                 const x = Math.random() * canvas.width;
                 const y = Math.random() * canvas.height;
                 const radius = Math.random() * 2 + 1;
@@ -2219,16 +2239,16 @@
             borderGradient.addColorStop(1, '#D4AF37');
             
             context.strokeStyle = borderGradient;
-            context.lineWidth = 30;
-            context.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
+            context.lineWidth = 15;
+            context.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
             
             // Add corner decorations
-            const cornerSize = 60;
+            const cornerSize = 30;
             context.strokeStyle = '#D4AF37';
-            context.lineWidth = 10;
+            context.lineWidth = 5;
             
             // Draw all four corners
-            [[50, 50], [canvas.width - 50, 50], [50, canvas.height - 50], [canvas.width - 50, canvas.height - 50]].forEach(([x, y], index) => {
+            [[30, 30], [canvas.width - 30, 30], [30, canvas.height - 30], [canvas.width - 30, canvas.height - 30]].forEach(([x, y], index) => {
                 context.save();
                 context.translate(x, y);
                 if (index === 1) context.rotate(Math.PI / 2);
@@ -2243,11 +2263,10 @@
                 context.restore();
             });
             
-            // Optimized title positioning
-            context.font = 'bold 120px "Dancing Script", cursive';
+            // Title with gradient
+            context.font = 'bold 70px "Dancing Script", cursive';
             
-            // Create gradient for title
-            const titleGradient = context.createLinearGradient(0, 150, canvas.width, 150);
+            const titleGradient = context.createLinearGradient(0, 100, canvas.width, 100);
             titleGradient.addColorStop(0, '#D4AF37');
             titleGradient.addColorStop(0.5, '#FFD700');
             titleGradient.addColorStop(1, '#D4AF37');
@@ -2255,37 +2274,38 @@
             context.fillStyle = titleGradient;
             context.textAlign = 'center';
             context.shadowColor = 'rgba(0, 0, 0, 0.7)';
-            context.shadowBlur = 20;
-            context.fillText('Happy New Year', canvas.width / 2, 180);
+            context.shadowBlur = 10;
+            context.fillText('Happy New Year', canvas.width / 2, 120);
             context.shadowBlur = 0;
             
-            // Optimized year positioning
-            context.font = 'bold 140px "Playfair Display", serif';
+            // Year display
+            context.font = 'bold 90px "Playfair Display", serif';
             context.fillStyle = '#D4AF37';
             context.textAlign = 'center';
             context.shadowColor = 'rgba(0, 0, 0, 0.6)';
-            context.shadowBlur = 15;
-            context.fillText('2027', canvas.width / 2, canvas.height - 120);
+            context.shadowBlur = 12;
+            context.fillText('2027', canvas.width / 2, canvas.height - 80);
             context.shadowBlur = 0;
             
-            // Add subtitle
-            context.font = 'bold 35px "Montserrat", sans-serif';
+            // Subtitle
+            context.font = 'bold 25px "Montserrat", sans-serif';
             context.fillStyle = 'rgba(255, 255, 255, 0.9)';
             context.textAlign = 'center';
-            context.fillText('Dela Cruz Family Celebration', canvas.width / 2, 240);
+            context.fillText('Dela Cruz Family Celebration', canvas.width / 2, 170);
             
-            // Optimized collage positioning - perfectly centered
-            const collageWidth = 2000;
-            const collageHeight = 1000; // 2:1 ratio for collage area
-            const collageStartX = (canvas.width - collageWidth) / 2;
-            const collageStartY = 320; // Perfectly centered vertically between title and year
+            // Collage positioning - centered on 4x6 canvas
+            const collageMargin = 40;
+            const collageWidth = canvas.width - (collageMargin * 2);
+            const collageHeight = 1000; // Fixed height for collage area
+            const collageStartX = collageMargin;
+            const collageStartY = 220; // Position after title
             
-            // Add background for collage area
-            context.fillStyle = 'rgba(0, 0, 0, 0.25)';
-            context.fillRect(collageStartX - 30, collageStartY - 30, collageWidth + 60, collageHeight + 60);
+            // Draw collage background
+            context.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            context.fillRect(collageStartX - 15, collageStartY - 15, collageWidth + 30, collageHeight + 30);
             
-            // Draw collage cells with optimized spacing
-            const cellPositions = getOptimizedCellPositions(currentLayout, collageWidth, collageHeight);
+            // Calculate cell positions based on layout
+            const cellPositions = get4x6CellPositions(currentLayout, collageWidth, collageHeight);
             
             let imagesLoaded = 0;
             const totalImages = Math.min(4, capturedPhotos.length);
@@ -2295,7 +2315,7 @@
                 return;
             }
             
-            // Load all images first, then draw
+            // Load all images
             const images = [];
             let loadedImages = 0;
             
@@ -2307,7 +2327,6 @@
                         loadedImages++;
                         
                         if (loadedImages === totalImages) {
-                            // All images loaded, draw them
                             drawCollageToCanvas();
                         }
                     };
@@ -2323,25 +2342,44 @@
             });
             
             function drawCollageToCanvas() {
+                // Draw each cell without stretching
                 cellPositions.forEach((pos, index) => {
                     if (images[index]) {
-                        // Draw cell with optimized shadow
-                        context.shadowColor = 'rgba(0, 0, 0, 0.4)';
-                        context.shadowBlur = 15;
-                        context.shadowOffsetY = 8;
+                        // Calculate aspect ratios
+                        const imgAspect = images[index].width / images[index].height;
+                        const cellAspect = pos.width / pos.height;
                         
+                        let drawWidth, drawHeight, drawX, drawY;
+                        
+                        if (imgAspect > cellAspect) {
+                            // Image is wider than cell
+                            drawHeight = pos.height;
+                            drawWidth = drawHeight * imgAspect;
+                            drawX = collageStartX + pos.x + (pos.width - drawWidth) / 2;
+                            drawY = collageStartY + pos.y;
+                        } else {
+                            // Image is taller than cell
+                            drawWidth = pos.width;
+                            drawHeight = drawWidth / imgAspect;
+                            drawX = collageStartX + pos.x;
+                            drawY = collageStartY + pos.y + (pos.height - drawHeight) / 2;
+                        }
+                        
+                        // Draw cell with shadow
+                        context.shadowColor = 'rgba(0, 0, 0, 0.4)';
+                        context.shadowBlur = 8;
+                        context.shadowOffsetY = 5;
+                        
+                        // Draw the image without stretching
                         context.drawImage(
                             images[index], 
-                            collageStartX + pos.x, 
-                            collageStartY + pos.y, 
-                            pos.width, 
-                            pos.height
+                            drawX, drawY, drawWidth, drawHeight
                         );
                         
                         context.shadowBlur = 0;
                         context.shadowOffsetY = 0;
                         
-                        // Draw cell border with gradient
+                        // Draw cell border
                         const cellBorderGradient = context.createLinearGradient(
                             collageStartX + pos.x, 
                             collageStartY + pos.y,
@@ -2353,7 +2391,7 @@
                         cellBorderGradient.addColorStop(1, '#D4AF37');
                         
                         context.strokeStyle = cellBorderGradient;
-                        context.lineWidth = 8;
+                        context.lineWidth = 4;
                         context.strokeRect(
                             collageStartX + pos.x, 
                             collageStartY + pos.y, 
@@ -2361,38 +2399,37 @@
                             pos.height
                         );
                         
-                        // Draw optimized photo number
+                        // Draw photo number
                         context.fillStyle = 'rgba(0, 0, 0, 0.7)';
                         context.beginPath();
                         context.arc(
-                            collageStartX + pos.x + 50, 
-                            collageStartY + pos.y + 50, 
-                            35, 0, Math.PI * 2
+                            collageStartX + pos.x + 25, 
+                            collageStartY + pos.y + 25, 
+                            20, 0, Math.PI * 2
                         );
                         context.fill();
                         
-                        context.font = 'bold 28px "Montserrat", sans-serif';
+                        context.font = 'bold 16px "Montserrat", sans-serif';
                         context.fillStyle = '#D4AF37';
                         context.textAlign = 'center';
                         context.textBaseline = 'middle';
                         context.fillText(
                             index + 1, 
-                            collageStartX + pos.x + 50, 
-                            collageStartY + pos.y + 50
+                            collageStartX + pos.x + 25, 
+                            collageStartY + pos.y + 25
                         );
                     }
                 });
                 
-                // Add optimized decorative elements
+                // Add decorative elements
                 const decorations = ['🎉', '✨', '🎊', '🌟', '🎇', '🥂'];
-                context.font = '45px Arial';
+                context.font = '35px Arial';
                 context.fillStyle = '#D4AF37';
                 context.textAlign = 'center';
                 
-                // Position decorations symmetrically
                 for (let i = 0; i < 6; i++) {
                     const angle = (i / 6) * Math.PI * 2;
-                    const radius = 200;
+                    const radius = 150;
                     const x = canvas.width / 2 + Math.cos(angle) * radius;
                     const y = collageStartY + collageHeight / 2 + Math.sin(angle) * radius;
                     
@@ -2403,27 +2440,27 @@
                     context.restore();
                 }
                 
-                // Add optimized footer text
-                context.font = '24px "Montserrat", sans-serif';
+                // Footer text
+                context.font = '18px "Montserrat", sans-serif';
                 context.fillStyle = 'rgba(255, 255, 255, 0.7)';
                 context.textAlign = 'center';
-                context.fillText('Premium Photobooth 2027 • Dela Cruz Family', canvas.width / 2, canvas.height - 60);
-                context.fillText('Capture the Moment, Celebrate the Year', canvas.width / 2, canvas.height - 25);
+                context.fillText('Premium Photobooth 2027 • Dela Cruz Family', canvas.width / 2, canvas.height - 40);
+                context.fillText('Perfectly sized for 4x6 inch photo prints', canvas.width / 2, canvas.height - 15);
                 
                 // Trigger download
                 try {
                     const link = document.createElement('a');
                     const timestamp = new Date().toISOString().slice(0, 19).replace(/[:.]/g, '-');
-                    link.download = `dela-cruz-2027-photobooth-${timestamp}.jpg`;
+                    link.download = `dela-cruz-2027-4x6-collage-${timestamp}.jpg`;
                     
-                    // Convert to data URL with quality parameter
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                    // Convert to data URL with high quality for printing
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
                     link.href = dataUrl;
                     
                     // Use a timeout to ensure everything is ready
                     setTimeout(() => {
                         link.click();
-                        showToast('Premium photobooth collage downloaded!', 3000);
+                        showToast('4x6 photobooth collage downloaded! Ready for printing.', 3000);
                     }, 100);
                     
                 } catch (e) {
@@ -2433,10 +2470,10 @@
             }
         }
         
-        // Get optimized cell positions for perfect ratio
-        function getOptimizedCellPositions(layout, containerWidth, containerHeight) {
+        // Get cell positions for 4x6 layout - UPDATED for perfect fit
+        function get4x6CellPositions(layout, containerWidth, containerHeight) {
             const positions = [];
-            const spacing = 15; // Optimized spacing
+            const spacing = 10; // Minimal spacing for 4x6 layout
             
             switch(layout) {
                 case '2x2':
@@ -2520,15 +2557,15 @@
         function toggleGrid() {
             gridVisible = !gridVisible;
             if (gridVisible) {
-                cameraGuide.style.display = 'block';
+                aspectRatioGuide.style.display = 'block';
                 toggleGridBtn.innerHTML = '<i class="fas fa-th"></i>';
                 toggleGridBtn.style.color = '#D4AF37';
-                showToast('Framing grid enabled');
+                showToast('4x6 framing guide enabled');
             } else {
-                cameraGuide.style.display = 'none';
+                aspectRatioGuide.style.display = 'none';
                 toggleGridBtn.innerHTML = '<i class="fas fa-th-large"></i>';
                 toggleGridBtn.style.color = 'white';
-                showToast('Framing grid disabled');
+                showToast('Framing guide disabled');
             }
         }
         
@@ -2621,7 +2658,7 @@
                 
                 // Show welcome message
                 setTimeout(() => {
-                    showToast('Welcome to Dela Cruz 2027 Photobooth!', 2500);
+                    showToast('Welcome to Dela Cruz 2027 Photobooth! Photos optimized for 4x6 printing.', 3000);
                 }, 1200);
             }, 500);
             
