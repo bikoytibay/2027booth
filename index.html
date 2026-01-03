@@ -574,22 +574,6 @@
             overflow: hidden;
         }
         
-        .photo-collage::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, 
-                transparent 0%, 
-                var(--premium-gold) 20%, 
-                var(--premium-silver) 50%, 
-                var(--premium-gold) 80%, 
-                transparent 100%);
-            z-index: 1;
-        }
-        
         .photo-collage.active {
             display: block;
             animation: fadeIn 0.5s ease-out;
@@ -1090,43 +1074,30 @@
             font-weight: 600;
         }
         
-        /* Optimized ratio classes */
-        .ratio-4x3 {
-            aspect-ratio: 4 / 3;
+        /* Loading indicator */
+        .camera-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+            color: var(--premium-gold);
         }
         
-        .ratio-3x4 {
-            aspect-ratio: 3 / 4;
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(212, 175, 55, 0.3);
+            border-top: 4px solid var(--premium-gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
         }
         
-        .ratio-1x1 {
-            aspect-ratio: 1 / 1;
-        }
-        
-        /* Print layout optimization */
-        .print-layout {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: grid;
-            grid-template-rows: auto 1fr auto;
-            gap: 0;
-        }
-        
-        .print-header {
-            padding: 10px 0;
-        }
-        
-        .print-body {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-        
-        .print-footer {
-            padding: 10px 0;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -1279,6 +1250,9 @@
         let capturedPhotos = [];
         let photoCount = 0;
         let fireworksInterval = null;
+        let cameraReady = false;
+        let isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        let isAndroid = /Android/.test(navigator.userAgent);
         
         // DOM Elements
         const cameraView = document.getElementById('camera-view');
@@ -1394,13 +1368,22 @@
             }, 1000);
         }
         
-        // Initialize camera
+        // Initialize camera - Fixed for iOS
         async function initCamera() {
             try {
                 if (cameraStream) {
                     cameraStream.getTracks().forEach(track => track.stop());
                 }
                 
+                // Show loading indicator
+                cameraView.innerHTML = `
+                    <div class="camera-loading">
+                        <div class="spinner"></div>
+                        <p>Loading camera...</p>
+                    </div>
+                `;
+                
+                // For iOS, we need to handle autoplay restrictions
                 const constraints = {
                     video: {
                         facingMode: facingMode,
@@ -1410,12 +1393,30 @@
                     audio: false
                 };
                 
+                // Try to get user media
                 cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+                
+                // Set the stream to the video element
                 cameraView.srcObject = cameraStream;
                 
-                startFireworksAnimation();
-                
-                showToast('Camera activated! Ready for your photoshoot.', 2000);
+                // For iOS, we need to handle the play promise
+                cameraView.play().then(() => {
+                    cameraReady = true;
+                    startFireworksAnimation();
+                    showToast('Camera activated! Ready for your photoshoot.', 2000);
+                }).catch(e => {
+                    console.error('Error playing video:', e);
+                    showToast('Tap the screen to start camera', 3000);
+                    
+                    // Add a manual play trigger for iOS
+                    document.body.addEventListener('touchstart', function startCameraOnTouch() {
+                        cameraView.play().then(() => {
+                            cameraReady = true;
+                            startFireworksAnimation();
+                            document.body.removeEventListener('touchstart', startCameraOnTouch);
+                        });
+                    }, { once: true });
+                });
                 
             } catch (error) {
                 console.error('Error accessing camera:', error);
@@ -1424,7 +1425,8 @@
                 cameraView.innerHTML = 
                     '<div class="d-flex flex-column align-items-center justify-content-center h-100">' +
                     '<i class="fas fa-camera-slash fa-3x mb-2" style="color: var(--premium-gold);"></i>' +
-                    '<p class="mb-2" style="font-size: 1rem;">Camera Access Required</p>' +
+                    '<p class="mb-2 text-center px-3" style="font-size: 1rem;">Camera access is required</p>' +
+                    '<p class="mb-3 small text-center px-3" style="color: rgba(255,255,255,0.7);">Please allow camera permissions in your browser settings</p>' +
                     '<button class="btn btn-gold mt-1" onclick="initCamera()" style="background: linear-gradient(135deg, var(--premium-gold) 0%, #B8860B 100%); color: black; font-weight: bold; padding: 0.6rem 1.2rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3); font-size: 0.9rem;">' +
                     '<i class="fas fa-camera me-2"></i>Enable Camera' +
                     '</button>' +
@@ -1488,10 +1490,21 @@
             }
         }
         
-        // Capture photo with optimized ratio
+        // Capture photo with optimized ratio - FIXED for iOS
         function capturePhoto() {
+            if (!cameraReady) {
+                showToast('Camera is not ready yet. Please wait...', 2000);
+                return;
+            }
+            
             if (photoCount >= 4) {
                 showToast('You have captured 4 photos! Reset to take more.', 2000);
+                return;
+            }
+            
+            // Check if video is playing and has valid dimensions
+            if (!cameraView.videoWidth || !cameraView.videoHeight || cameraView.videoWidth === 0 || cameraView.videoHeight === 0) {
+                showToast('Camera not ready. Please try again.', 2000);
                 return;
             }
             
@@ -1528,6 +1541,7 @@
                 sourceY = (cameraView.videoHeight - sourceHeight) / 2;
             }
             
+            // Draw the video frame
             context.drawImage(cameraView, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, targetWidth, targetHeight);
             
             // Apply selected filter
@@ -1609,8 +1623,15 @@
             context.fillStyle = '#D4AF37';
             context.fillText('★', 60, 110);
             
-            // Convert to data URL
-            const photoData = canvas.toDataURL('image/png');
+            // Convert to data URL - iOS may have issues with large images
+            let photoData;
+            try {
+                photoData = canvas.toDataURL('image/jpeg', 0.9); // Use JPEG for better compatibility
+            } catch (e) {
+                console.error('Error converting canvas to data URL:', e);
+                // Try with lower quality
+                photoData = canvas.toDataURL('image/jpeg', 0.7);
+            }
             
             // Add to captured photos array
             capturedPhotos.push({
@@ -2093,6 +2114,13 @@
             const cellPositions = getOptimizedCellPositions(currentLayout, collageWidth, collageHeight);
             
             let imagesLoaded = 0;
+            const totalImages = Math.min(4, capturedPhotos.length);
+            
+            if (totalImages === 0) {
+                showToast('No photos to download!', 2000);
+                return;
+            }
+            
             cellPositions.forEach((pos, index) => {
                 if (capturedPhotos[index]) {
                     const img = new Image();
@@ -2156,7 +2184,7 @@
                         imagesLoaded++;
                         
                         // When all images are loaded, add final touches and trigger download
-                        if (imagesLoaded === 4) {
+                        if (imagesLoaded === totalImages) {
                             // Add optimized decorative elements
                             const decorations = ['🎉', '✨', '🎊', '🌟', '🎇', '🥂'];
                             context.font = '45px Arial';
@@ -2185,16 +2213,32 @@
                             context.fillText('Capture the Moment, Celebrate the Year', canvas.width / 2, canvas.height - 25);
                             
                             // Trigger download
-                            const link = document.createElement('a');
-                            const timestamp = new Date().toISOString().slice(0, 19).replace(/[:.]/g, '-');
-                            link.download = `dela-cruz-2027-photobooth-${timestamp}.png`;
-                            link.href = canvas.toDataURL('image/png');
-                            link.click();
-                            
-                            showToast('Premium photobooth collage downloaded! Ready for printing.', 3000);
+                            try {
+                                const link = document.createElement('a');
+                                const timestamp = new Date().toISOString().slice(0, 19).replace(/[:.]/g, '-');
+                                link.download = `dela-cruz-2027-photobooth-${timestamp}.jpg`;
+                                link.href = canvas.toDataURL('image/jpeg', 0.9);
+                                link.click();
+                                
+                                showToast('Premium photobooth collage downloaded! Ready for printing.', 3000);
+                            } catch (e) {
+                                console.error('Error downloading image:', e);
+                                showToast('Error downloading collage. Please try again.', 3000);
+                            }
                         }
                     };
+                    
+                    img.onerror = function() {
+                        console.error('Error loading image for collage');
+                        imagesLoaded++;
+                        if (imagesLoaded === totalImages) {
+                            showToast('Error loading some photos. Download may be incomplete.', 3000);
+                        }
+                    };
+                    
                     img.src = capturedPhotos[index].data;
+                } else {
+                    imagesLoaded++;
                 }
             });
         }
@@ -2307,8 +2351,7 @@
             initFilters();
             initLayouts();
             
-            initCamera();
-            
+            // Set up event listeners first
             captureBtn.addEventListener('click', capturePhoto);
             
             switchCameraBtn.addEventListener('click', function() {
@@ -2329,6 +2372,7 @@
             
             resetBtn.addEventListener('click', resetPhotobooth);
             
+            // Add touch event handlers for better mobile experience
             document.querySelectorAll('button, .capture-btn, .secondary-btn, .layout-option, .filter-option, .overlay-option').forEach(btn => {
                 btn.addEventListener('touchstart', function(e) {
                     e.preventDefault();
@@ -2338,11 +2382,37 @@
                 btn.addEventListener('touchend', function() {
                     this.style.transform = '';
                 });
+                
+                // Prevent context menu on long press
+                btn.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                    return false;
+                });
             });
             
+            // Initialize camera after a short delay
             setTimeout(() => {
-                showToast('Welcome to Dela Cruz 2027 Photobooth!', 2500);
-            }, 1200);
+                initCamera();
+                
+                // Show welcome message
+                setTimeout(() => {
+                    showToast('Welcome to Dela Cruz 2027 Photobooth!', 2500);
+                }, 1200);
+            }, 500);
+            
+            // Add event listener for page visibility to handle iOS camera issues
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    // Page is hidden, stop camera
+                    if (cameraStream) {
+                        cameraStream.getTracks().forEach(track => track.stop());
+                        cameraStream = null;
+                    }
+                } else {
+                    // Page is visible again, restart camera after a delay
+                    setTimeout(initCamera, 500);
+                }
+            });
         });
     </script>
 </body>
