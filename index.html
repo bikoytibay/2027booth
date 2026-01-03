@@ -1,0 +1,2349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dela Cruz 2027 New Year Photobooth</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts for premium typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:wght@700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --new-year-gold: #FFD700;
+            --new-year-silver: #C0C0C0;
+            --new-year-blue: #1E3A8A;
+            --new-year-purple: #7C3AED;
+            --new-year-red: #DC2626;
+            --new-year-green: #10B981;
+            --premium-gold: #D4AF37;
+            --premium-silver: #A8A8A8;
+        }
+        
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a2b5a 50%, #3a1b6a 100%);
+            color: white;
+            min-height: 100vh;
+            padding-bottom: 2rem;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.85) 0%, rgba(30, 58, 138, 0.85) 100%);
+            padding: 1.2rem;
+            border-radius: 0 0 25px 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            margin-bottom: 1.8rem;
+            border-bottom: 4px solid var(--premium-gold);
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                var(--premium-gold) 0%, 
+                var(--premium-silver) 25%, 
+                var(--new-year-red) 50%, 
+                var(--premium-silver) 75%, 
+                var(--premium-gold) 100%);
+            z-index: 2;
+        }
+        
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--premium-gold);
+            text-shadow: 0 2px 10px rgba(212, 175, 55, 0.5);
+            font-size: clamp(1.6rem, 4.5vw, 2.5rem);
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header .year {
+            color: var(--premium-silver);
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.9) 0%, rgba(124, 58, 237, 0.9) 100%);
+            padding: 0.4rem 1.5rem;
+            border-radius: 25px;
+            display: inline-block;
+            margin-top: 0.5rem;
+            font-size: clamp(0.95rem, 2.5vw, 1.2rem);
+            font-weight: 600;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+        }
+        
+        .camera-container {
+            background: linear-gradient(135deg, #111 0%, #222 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+            margin-bottom: 1.8rem;
+            position: relative;
+            border: 2px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        #camera-view {
+            width: 100%;
+            height: 55vh;
+            min-height: 380px;
+            max-height: 550px;
+            object-fit: cover;
+            display: block;
+            transform: scaleX(1);
+            background: #000;
+        }
+        
+        .camera-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        .premium-frame {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3;
+            background: 
+                linear-gradient(90deg, rgba(212, 175, 55, 0.1) 1px, transparent 1px) 0 0 / 20px 20px,
+                linear-gradient(rgba(212, 175, 55, 0.1) 1px, transparent 1px) 0 0 / 20px 20px;
+        }
+        
+        .celebration-text {
+            position: absolute;
+            top: 12%;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-family: 'Dancing Script', cursive;
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: var(--premium-gold);
+            text-shadow: 0 3px 15px rgba(212, 175, 55, 0.7);
+            z-index: 5;
+            padding: 0 15px;
+            animation: gentleGlow 3s infinite alternate;
+            letter-spacing: 1px;
+        }
+        
+        .year-display {
+            position: absolute;
+            bottom: 15%;
+            right: 10%;
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            color: var(--premium-gold);
+            text-shadow: 0 3px 20px rgba(212, 175, 55, 0.8);
+            z-index: 5;
+            font-weight: 700;
+            transform: rotate(-5deg);
+            background: linear-gradient(45deg, rgba(0, 0, 0, 0.7) 0%, transparent 70%);
+            padding: 10px 20px;
+            border-radius: 15px;
+            border: 2px solid rgba(212, 175, 55, 0.4);
+        }
+        
+        @keyframes gentleGlow {
+            0% {
+                text-shadow: 0 3px 15px rgba(212, 175, 55, 0.7);
+                transform: scale(1);
+            }
+            100% {
+                text-shadow: 0 3px 25px rgba(212, 175, 55, 0.9), 
+                             0 0 40px rgba(255, 215, 0, 0.5);
+                transform: scale(1.02);
+            }
+        }
+        
+        .firework {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 3;
+            box-shadow: 0 0 20px currentColor;
+        }
+        
+        .firework-burst {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 3;
+            border: 2px solid;
+        }
+        
+        .camera-controls {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(20, 20, 40, 0.95) 100%);
+            padding: 1.2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .capture-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--new-year-red) 0%, #8B0000 100%);
+            border: 4px solid var(--premium-gold);
+            color: white;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 25px rgba(220, 38, 38, 0.8), 
+                        0 0 30px rgba(212, 175, 55, 0.4) inset;
+            touch-action: manipulation;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .capture-btn::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+        }
+        
+        .capture-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 3px 15px rgba(220, 38, 38, 0.6), 
+                        0 0 20px rgba(212, 175, 55, 0.3) inset;
+        }
+        
+        .secondary-btn {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            touch-action: manipulation;
+            font-size: 1.2rem;
+            backdrop-filter: blur(5px);
+        }
+        
+        .secondary-btn:active {
+            transform: scale(0.95);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%);
+        }
+        
+        .photo-counter {
+            background: linear-gradient(135deg, var(--new-year-blue) 0%, var(--new-year-purple) 100%);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 25px;
+            font-weight: 700;
+            min-width: 140px;
+            text-align: center;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 5px 15px rgba(30, 58, 138, 0.4);
+            font-size: 0.95rem;
+        }
+        
+        .collage-container, .filters-container, .overlays-container {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(30, 58, 138, 0.8) 100%);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            margin-bottom: 1.8rem;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .collage-container::before, .filters-container::before, .overlays-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                var(--premium-gold) 20%, 
+                var(--premium-silver) 50%, 
+                var(--premium-gold) 80%, 
+                transparent 100%);
+            z-index: 1;
+        }
+        
+        .section-title {
+            color: var(--premium-gold);
+            border-bottom: 2px solid var(--premium-gold);
+            padding-bottom: 0.8rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            font-size: clamp(1.2rem, 3.2vw, 1.5rem);
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-family: 'Playfair Display', serif;
+            letter-spacing: 0.5px;
+        }
+        
+        .collage-layouts, .overlays-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+        
+        .layout-option, .overlay-option {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border-radius: 15px;
+            padding: 1.2rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            touch-action: manipulation;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .layout-option::before, .overlay-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .layout-option:active, .overlay-option:active {
+            transform: scale(0.98);
+        }
+        
+        .layout-option.active, .overlay-option.active {
+            border-color: var(--premium-gold);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.05) 100%);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+        }
+        
+        .layout-option.active::before, .overlay-option.active::before {
+            opacity: 1;
+        }
+        
+        .layout-preview {
+            height: 100px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            display: grid;
+            gap: 4px;
+            padding: 4px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .layout-2x2 {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+        }
+        
+        .layout-1x4 {
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+        }
+        
+        .layout-3-1 {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 2fr 1fr;
+        }
+        
+        .layout-1-3 {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 2fr;
+        }
+        
+        .layout-cell {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 5px;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .layout-cell.filled {
+            background-size: cover;
+            background-position: center;
+            border: 2px solid var(--premium-gold);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .layout-name, .overlay-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .overlay-preview {
+            height: 100px;
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 0.8rem;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        .overlay-preview-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .overlay-fireworks {
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.3) 0%, rgba(0, 0, 0, 0.9) 70%);
+        }
+        
+        .overlay-confetti {
+            background: linear-gradient(45deg, rgba(212, 175, 55, 0.2) 0%, rgba(30, 58, 138, 0.2) 100%);
+        }
+        
+        .overlay-gold {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.4) 0%, rgba(255, 165, 0, 0.4) 100%);
+        }
+        
+        .overlay-sparkle {
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, rgba(124, 58, 237, 0.4) 100%);
+        }
+        
+        .overlay-icon {
+            font-size: 2.5rem;
+            color: var(--premium-gold);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+        }
+        
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 1.2rem;
+        }
+        
+        .filter-option {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border-radius: 15px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
+            touch-action: manipulation;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .filter-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .filter-option:active {
+            transform: scale(0.98);
+        }
+        
+        .filter-option.active {
+            border-color: var(--premium-gold);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.05) 100%);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+        }
+        
+        .filter-option.active::before {
+            opacity: 1;
+        }
+        
+        .filter-preview {
+            height: 70px;
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .filter-none {
+            background: linear-gradient(135deg, #f5f5f5 0%, #d4d4d4 100%);
+        }
+        
+        .filter-gold {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        }
+        
+        .filter-silver {
+            background: linear-gradient(135deg, #C0C0C0 0%, #808080 100%);
+        }
+        
+        .filter-sparkle {
+            background: linear-gradient(135deg, #7C3AED 0%, #3B82F6 100%);
+        }
+        
+        .filter-fireworks {
+            background: linear-gradient(135deg, #DC2626 0%, #F59E0B 100%);
+        }
+        
+        .filter-festive {
+            background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%);
+        }
+        
+        .filter-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+            line-height: 1.2;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .photo-collage {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.85) 0%, rgba(30, 58, 138, 0.85) 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+            margin-bottom: 2rem;
+            display: none;
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .photo-collage::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                var(--premium-gold) 20%, 
+                var(--premium-silver) 50%, 
+                var(--premium-gold) 80%, 
+                transparent 100%);
+            z-index: 1;
+        }
+        
+        .photo-collage.active {
+            display: block;
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .collage-display {
+            height: 65vh;
+            min-height: 450px;
+            max-height: 650px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            display: grid;
+            gap: 8px;
+            padding: 8px;
+            margin-bottom: 2rem;
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.7);
+        }
+        
+        .collage-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(90deg, rgba(212, 175, 55, 0.05) 1px, transparent 1px) 0 0 / 30px 30px,
+                linear-gradient(rgba(212, 175, 55, 0.05) 1px, transparent 1px) 0 0 / 30px 30px;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .collage-cell {
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+        }
+        
+        .cell-number {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: radial-gradient(circle, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 100%);
+            color: var(--premium-gold);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: bold;
+            border: 2px solid var(--premium-gold);
+            z-index: 2;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 1rem 2.2rem;
+            border-radius: 50px;
+            font-weight: 700;
+            border: none;
+            transition: all 0.4s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.9rem;
+            font-size: 1.1rem;
+            min-width: 220px;
+            touch-action: manipulation;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: 0.5px;
+        }
+        
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s;
+        }
+        
+        .action-btn:hover::before {
+            left: 100%;
+        }
+        
+        .action-btn:active {
+            transform: scale(0.97);
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, var(--premium-gold) 0%, #B8860B 100%);
+            color: #000;
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .download-btn:active {
+            background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%);
+        }
+        
+        .reset-btn {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+            color: white;
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            backdrop-filter: blur(10px);
+        }
+        
+        .reset-btn:active {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%);
+        }
+        
+        .countdown {
+            font-size: clamp(1.1rem, 2.8vw, 1.4rem);
+            color: var(--premium-gold);
+            font-weight: 700;
+            text-align: center;
+            padding: 1rem;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(30, 58, 138, 0.6) 100%);
+            border-radius: 15px;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .flash-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.5) 100%);
+            opacity: 0;
+            z-index: 10;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        
+        .camera-guide {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 82%;
+            height: 72%;
+            border: 3px dashed var(--premium-gold);
+            border-radius: 12px;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.7;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 2.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+            padding: 0 1rem;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(30, 58, 138, 0.95) 100%);
+            color: white;
+            padding: 1.2rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-left: 5px solid var(--premium-gold);
+            max-width: 90%;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        /* Premium frame decorations */
+        .frame-corner {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            z-index: 4;
+            pointer-events: none;
+        }
+        
+        .corner-tl {
+            top: 10px;
+            left: 10px;
+            border-top: 3px solid var(--premium-gold);
+            border-left: 3px solid var(--premium-gold);
+        }
+        
+        .corner-tr {
+            top: 10px;
+            right: 10px;
+            border-top: 3px solid var(--premium-gold);
+            border-right: 3px solid var(--premium-gold);
+        }
+        
+        .corner-bl {
+            bottom: 10px;
+            left: 10px;
+            border-bottom: 3px solid var(--premium-gold);
+            border-left: 3px solid var(--premium-gold);
+        }
+        
+        .corner-br {
+            bottom: 10px;
+            right: 10px;
+            border-bottom: 3px solid var(--premium-gold);
+            border-right: 3px solid var(--premium-gold);
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .camera-controls {
+                padding: 1rem;
+                gap: 1rem;
+            }
+            
+            #camera-view {
+                height: 45vh;
+                min-height: 320px;
+            }
+            
+            .collage-display {
+                height: 55vh;
+                min-height: 380px;
+            }
+            
+            .collage-layouts, .overlays-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .filters-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1rem;
+            }
+            
+            .action-btn {
+                min-width: 200px;
+                padding: 0.9rem 1.8rem;
+                font-size: 1rem;
+            }
+            
+            .layout-preview {
+                height: 90px;
+            }
+            
+            .celebration-text {
+                font-size: clamp(1.8rem, 4.5vw, 2.5rem);
+                top: 10%;
+            }
+            
+            .year-display {
+                font-size: clamp(2.2rem, 5.5vw, 3.5rem);
+                bottom: 12%;
+                right: 8%;
+            }
+            
+            .capture-btn {
+                width: 75px;
+                height: 75px;
+                font-size: 1.6rem;
+            }
+            
+            .secondary-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .container {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+            
+            .header {
+                padding: 1rem;
+                margin-bottom: 1.2rem;
+            }
+            
+            .camera-container, .collage-container, .filters-container, .overlays-container {
+                border-radius: 15px;
+                padding: 1.2rem;
+            }
+            
+            #camera-view {
+                min-height: 280px;
+            }
+            
+            .capture-btn {
+                width: 70px;
+                height: 70px;
+                font-size: 1.5rem;
+            }
+            
+            .secondary-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1rem;
+            }
+            
+            .collage-layouts, .overlays-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .action-btn {
+                min-width: 100%;
+                padding: 0.8rem 1.5rem;
+                font-size: 0.95rem;
+            }
+            
+            .celebration-text {
+                font-size: clamp(1.6rem, 4vw, 2.2rem);
+                top: 8%;
+            }
+            
+            .year-display {
+                font-size: clamp(2rem, 5vw, 3rem);
+                bottom: 10%;
+                right: 5%;
+            }
+            
+            .photo-collage {
+                padding: 1.5rem;
+            }
+            
+            .collage-display {
+                min-height: 350px;
+            }
+        }
+        
+        /* Print overlay styles */
+        .print-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .overlay-fireworks-print {
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+        }
+        
+        .overlay-confetti-print {
+            background: linear-gradient(45deg, rgba(212, 175, 55, 0.1) 0%, rgba(30, 58, 138, 0.1) 100%);
+        }
+        
+        .overlay-gold-print {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(255, 165, 0, 0.2) 100%);
+        }
+        
+        .overlay-sparkle-print {
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);
+        }
+        
+        .print-title {
+            position: absolute;
+            top: 30px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-family: 'Dancing Script', cursive;
+            font-size: 4.5rem;
+            color: var(--premium-gold);
+            text-shadow: 0 4px 25px rgba(212, 175, 55, 0.8);
+            z-index: 2;
+            letter-spacing: 2px;
+        }
+        
+        .print-subtitle {
+            position: absolute;
+            top: 110px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            color: rgba(255, 255, 255, 0.9);
+            z-index: 2;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        .print-year-large {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            font-family: 'Playfair Display', serif;
+            font-size: 6rem;
+            color: var(--premium-gold);
+            text-shadow: 0 4px 30px rgba(212, 175, 55, 0.9);
+            z-index: 2;
+            font-weight: 700;
+            transform: rotate(-8deg);
+            background: linear-gradient(45deg, rgba(0, 0, 0, 0.6) 0%, transparent 70%);
+            padding: 20px 30px;
+            border-radius: 20px;
+            border: 3px solid rgba(212, 175, 55, 0.5);
+        }
+        
+        .print-decoration {
+            position: absolute;
+            font-size: 2rem;
+            color: var(--premium-gold);
+            opacity: 0.8;
+            z-index: 1;
+            text-shadow: 0 2px 15px rgba(0, 0, 0, 0.7);
+        }
+        
+        .print-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 15px solid transparent;
+            background: linear-gradient(45deg, var(--premium-gold), var(--premium-silver), var(--premium-gold)) border-box;
+            -webkit-mask: 
+                linear-gradient(#fff 0 0) padding-box, 
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            z-index: 3;
+        }
+        
+        .premium-logo {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            z-index: 2;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <div class="header text-center">
+            <h1><i class="fas fa-crown me-2"></i>Dela Cruz 2027 New Year Photobooth</h1>
+            <div class="year">
+                <i class="fas fa-star me-2"></i>Premium New Year Celebration
+            </div>
+            <div class="countdown">
+                <i class="fas fa-clock me-2"></i>Countdown to 2027: <span id="countdown-timer">Loading...</span>
+            </div>
+        </div>
+        
+        <!-- Camera Section -->
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="camera-container">
+                    <div class="camera-guide"></div>
+                    <div class="premium-frame"></div>
+                    <div class="frame-corner corner-tl"></div>
+                    <div class="frame-corner corner-tr"></div>
+                    <div class="frame-corner corner-bl"></div>
+                    <div class="frame-corner corner-br"></div>
+                    
+                    <video id="camera-view" autoplay playsinline></video>
+                    <div class="camera-overlay" id="camera-overlay">
+                        <div class="celebration-text" id="celebration-text">Happy New Year</div>
+                        <div class="year-display" id="year-display">2027</div>
+                    </div>
+                    <div class="flash-effect" id="flash-effect"></div>
+                    <div class="camera-controls">
+                        <div class="secondary-btn" id="switch-camera" title="Switch Camera">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <div class="photo-counter">
+                            <i class="fas fa-camera me-2"></i> 
+                            <span id="photo-counter-text">0/4 Photos</span>
+                        </div>
+                        <div class="capture-btn" id="capture-btn">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <div class="secondary-btn" id="toggle-flash" title="Toggle Flash">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="secondary-btn" id="toggle-grid" title="Toggle Grid">
+                            <i class="fas fa-th"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <!-- Overlays Section -->
+                <div class="overlays-container">
+                    <h3 class="section-title"><i class="fas fa-gem me-2"></i>Premium Overlays</h3>
+                    <div class="overlays-grid" id="overlays-grid">
+                        <!-- Overlays will be generated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Filters Section -->
+                <div class="filters-container">
+                    <h3 class="section-title"><i class="fas fa-palette me-2"></i>Photo Filters</h3>
+                    <div class="filters-grid" id="filters-grid">
+                        <!-- Filters will be generated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Layouts Section -->
+                <div class="collage-container">
+                    <h3 class="section-title"><i class="fas fa-th-large me-2"></i>Collage Layouts</h3>
+                    <div class="collage-layouts" id="collage-layouts">
+                        <!-- Layouts will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Photo Collage Display -->
+        <div class="photo-collage" id="photo-collage">
+            <h3 class="section-title"><i class="fas fa-trophy me-2"></i>Your Premium 2027 Collage</h3>
+            <div class="collage-display" id="collage-display">
+                <!-- Collage cells will be generated by JavaScript -->
+            </div>
+            <div class="action-buttons">
+                <button class="action-btn download-btn" id="download-btn">
+                    <i class="fas fa-download"></i> Download Premium Collage
+                </button>
+                <button class="action-btn reset-btn" id="reset-btn">
+                    <i class="fas fa-sync-alt"></i> New Photoshoot
+                </button>
+            </div>
+        </div>
+        
+        <!-- Instructions -->
+        <div class="alert alert-info mt-4" style="background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(30, 58, 138, 0.1) 100%); border: 1px solid rgba(212, 175, 55, 0.3); color: white; border-radius: 15px;">
+            <h5 class="d-flex align-items-center" style="color: var(--premium-gold);">
+                <i class="fas fa-graduation-cap me-2"></i>How to Create Your Premium 2027 Photobooth:
+            </h5>
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <ul class="mb-0">
+                        <li class="mb-2"><i class="fas fa-check-circle me-2 text-success"></i>Allow camera access when prompted</li>
+                        <li class="mb-2"><i class="fas fa-check-circle me-2 text-success"></i>Choose a premium overlay effect</li>
+                        <li class="mb-2"><i class="fas fa-check-circle me-2 text-success"></i>Select an elegant photo filter</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="mb-0">
+                        <li class="mb-2"><i class="fas fa-check-circle me-2 text-success"></i>Pick a collage layout (4 photos)</li>
+                        <li class="mb-2"><i class="fas fa-check-circle me-2 text-success"></i>Capture your moments with the camera</li>
+                        <li><i class="fas fa-check-circle me-2 text-success"></i>Download your premium keepsake</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p class="mb-2"><i class="fas fa-star me-1" style="color: var(--premium-gold);"></i> Create lasting memories with this premium New Year 2027 photobooth</p>
+            <p class="mb-0">Designed with <i class="fas fa-heart text-danger"></i> for the Dela Cruz Family 2027 Celebration</p>
+        </div>
+    </div>
+
+    <!-- Bootstrap & jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Global variables
+        let cameraStream = null;
+        let facingMode = 'user';
+        let flashOn = false;
+        let gridVisible = true;
+        let currentFilter = 'none';
+        let currentLayout = '2x2';
+        let currentOverlay = 'fireworks';
+        let capturedPhotos = [];
+        let photoCount = 0;
+        let fireworksInterval = null;
+        
+        // DOM Elements
+        const cameraView = document.getElementById('camera-view');
+        const captureBtn = document.getElementById('capture-btn');
+        const switchCameraBtn = document.getElementById('switch-camera');
+        const toggleFlashBtn = document.getElementById('toggle-flash');
+        const toggleGridBtn = document.getElementById('toggle-grid');
+        const photoCounterText = document.getElementById('photo-counter-text');
+        const collageDisplay = document.getElementById('collage-display');
+        const photoCollage = document.getElementById('photo-collage');
+        const downloadBtn = document.getElementById('download-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const flashEffect = document.getElementById('flash-effect');
+        const cameraGuide = document.querySelector('.camera-guide');
+        const toast = document.getElementById('toast');
+        const celebrationText = document.getElementById('celebration-text');
+        const yearDisplay = document.getElementById('year-display');
+        const cameraOverlay = document.getElementById('camera-overlay');
+        
+        // Show toast notification
+        function showToast(message, duration = 3000) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+        
+        // New Year 2027 countdown
+        function updateCountdown() {
+            const now = new Date();
+            const newYear2027 = new Date('January 1, 2027 00:00:00');
+            const timeDiff = newYear2027 - now;
+            
+            if (timeDiff > 0) {
+                const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+                
+                document.getElementById('countdown-timer').textContent = 
+                    `${days}d ${hours}h ${minutes}m ${seconds}s`;
+            } else {
+                document.getElementById('countdown-timer').textContent = "Happy New Year 2027!";
+            }
+        }
+        
+        // Create fireworks animation
+        function createFireworks() {
+            // Clear existing fireworks
+            const existingFireworks = cameraOverlay.querySelectorAll('.firework, .firework-burst');
+            existingFireworks.forEach(fw => fw.remove());
+            
+            // Create new fireworks
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    createFirework();
+                }, i * 250);
+            }
+        }
+        
+        function createFirework() {
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            
+            // Random position
+            const x = Math.random() * 85 + 7.5;
+            const y = Math.random() * 85 + 7.5;
+            
+            // Random color
+            const colors = ['#D4AF37', '#FFD700', '#FF6347', '#1E90FF', '#32CD32'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            firework.style.left = `${x}%`;
+            firework.style.top = `${y}%`;
+            firework.style.backgroundColor = color;
+            firework.style.boxShadow = `0 0 25px ${color}`;
+            
+            cameraOverlay.appendChild(firework);
+            
+            // Animate the firework
+            firework.animate([
+                { width: '8px', height: '8px', opacity: 1 },
+                { width: '4px', height: '4px', opacity: 0.8 },
+                { width: '2px', height: '2px', opacity: 0 }
+            ], {
+                duration: 1000,
+                easing: 'ease-out'
+            });
+            
+            // Create burst after firework reaches top
+            setTimeout(() => {
+                createFireworkBurst(x, y, color);
+                firework.remove();
+            }, 800);
+        }
+        
+        function createFireworkBurst(x, y, color) {
+            const burst = document.createElement('div');
+            burst.className = 'firework-burst';
+            burst.style.left = `${x}%`;
+            burst.style.top = `${y}%`;
+            burst.style.borderColor = color;
+            burst.style.boxShadow = `0 0 40px ${color}`;
+            
+            cameraOverlay.appendChild(burst);
+            
+            // Animate the burst
+            burst.animate([
+                { width: '0px', height: '0px', opacity: 1 },
+                { width: '150px', height: '150px', opacity: 0 }
+            ], {
+                duration: 1200,
+                easing: 'ease-out'
+            });
+            
+            setTimeout(() => {
+                burst.remove();
+            }, 1200);
+        }
+        
+        // Initialize camera
+        async function initCamera() {
+            try {
+                // Stop any existing stream
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(track => track.stop());
+                }
+                
+                // Get camera stream
+                const constraints = {
+                    video: {
+                        facingMode: facingMode,
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: false
+                };
+                
+                cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+                cameraView.srcObject = cameraStream;
+                
+                // Start fireworks animation
+                startFireworksAnimation();
+                
+                showToast('Premium camera activated! Ready for your photoshoot.', 2500);
+                
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+                
+                // Show premium placeholder for camera
+                cameraView.style.background = 'linear-gradient(135deg, #111 0%, #222 100%)';
+                cameraView.innerHTML = 
+                    '<div class="d-flex flex-column align-items-center justify-content-center h-100">' +
+                    '<i class="fas fa-camera-slash fa-4x mb-3" style="color: var(--premium-gold);"></i>' +
+                    '<p class="mb-3" style="font-size: 1.2rem;">Premium Camera Access Required</p>' +
+                    '<button class="btn btn-gold mt-2" onclick="initCamera()" style="background: linear-gradient(135deg, var(--premium-gold) 0%, #B8860B 100%); color: black; font-weight: bold; padding: 0.8rem 1.5rem; border-radius: 25px; border: 2px solid rgba(255,255,255,0.3);">' +
+                    '<i class="fas fa-camera me-2"></i>Enable Camera' +
+                    '</button>' +
+                    '</div>';
+                
+                showToast('Camera access required for premium photobooth experience.', 5000);
+            }
+        }
+        
+        // Start fireworks animation
+        function startFireworksAnimation() {
+            // Clear existing interval
+            if (fireworksInterval) {
+                clearInterval(fireworksInterval);
+            }
+            
+            // Start new fireworks based on selected overlay
+            if (currentOverlay === 'fireworks') {
+                createFireworks();
+                fireworksInterval = setInterval(createFireworks, 2500);
+            } else if (currentOverlay === 'confetti') {
+                createConfetti();
+                fireworksInterval = setInterval(createConfetti, 1800);
+            } else {
+                // For gold and sparkle overlays, just clear any existing fireworks
+                const existingFireworks = cameraOverlay.querySelectorAll('.firework, .firework-burst');
+                existingFireworks.forEach(fw => fw.remove());
+                if (fireworksInterval) {
+                    clearInterval(fireworksInterval);
+                    fireworksInterval = null;
+                }
+            }
+        }
+        
+        // Create confetti animation
+        function createConfetti() {
+            for (let i = 0; i < 25; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'firework';
+                confetti.style.fontSize = '24px';
+                confetti.textContent = ['🎉', '🎊', '✨', '🌟', '🥂', '🎇', '🎆', '💫'][Math.floor(Math.random() * 8)];
+                
+                // Random position
+                const x = Math.random() * 100;
+                const startY = -10;
+                
+                confetti.style.left = `${x}%`;
+                confetti.style.top = `${startY}%`;
+                confetti.style.color = ['#D4AF37', '#FFD700', '#FF6347', '#1E90FF'][Math.floor(Math.random() * 4)];
+                
+                cameraOverlay.appendChild(confetti);
+                
+                // Animate the confetti falling
+                const duration = 2500 + Math.random() * 2000;
+                confetti.animate([
+                    { transform: `translateY(0px) rotate(0deg)`, opacity: 1 },
+                    { transform: `translateY(120vh) rotate(${360 + Math.random() * 360}deg)`, opacity: 0 }
+                ], {
+                    duration: duration,
+                    easing: 'cubic-bezier(0.215, 0.61, 0.355, 1)'
+                });
+                
+                // Remove after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, duration);
+            }
+        }
+        
+        // Capture photo with premium design
+        function capturePhoto() {
+            if (photoCount >= 4) {
+                showToast('You have captured 4 premium photos! Reset to take more.', 2000);
+                return;
+            }
+            
+            // Flash effect
+            flashEffect.style.opacity = '0.9';
+            setTimeout(() => {
+                flashEffect.style.opacity = '0';
+            }, 250);
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = cameraView.videoWidth;
+            canvas.height = cameraView.videoHeight;
+            
+            const context = canvas.getContext('2d');
+            
+            // Draw the current video frame
+            context.drawImage(cameraView, 0, 0, canvas.width, canvas.height);
+            
+            // Apply selected filter
+            applyFilterToCanvas(context, canvas.width, canvas.height);
+            
+            // Apply selected overlay to the captured photo
+            applyOverlayToCanvas(context, canvas.width, canvas.height);
+            
+            // Add premium frame effect
+            context.strokeStyle = '#D4AF37';
+            context.lineWidth = 10;
+            context.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+            
+            // Add corner decorations
+            const cornerSize = 40;
+            context.strokeStyle = '#D4AF37';
+            context.lineWidth = 5;
+            
+            // Top-left corner
+            context.beginPath();
+            context.moveTo(20, 20 + cornerSize);
+            context.lineTo(20, 20);
+            context.lineTo(20 + cornerSize, 20);
+            context.stroke();
+            
+            // Top-right corner
+            context.beginPath();
+            context.moveTo(canvas.width - 20 - cornerSize, 20);
+            context.lineTo(canvas.width - 20, 20);
+            context.lineTo(canvas.width - 20, 20 + cornerSize);
+            context.stroke();
+            
+            // Bottom-left corner
+            context.beginPath();
+            context.moveTo(20, canvas.height - 20 - cornerSize);
+            context.lineTo(20, canvas.height - 20);
+            context.lineTo(20 + cornerSize, canvas.height - 20);
+            context.stroke();
+            
+            // Bottom-right corner
+            context.beginPath();
+            context.moveTo(canvas.width - 20 - cornerSize, canvas.height - 20);
+            context.lineTo(canvas.width - 20, canvas.height - 20);
+            context.lineTo(canvas.width - 20, canvas.height - 20 - cornerSize);
+            context.stroke();
+            
+            // Add "Happy New Year" text with premium styling
+            context.font = 'bold 80px "Dancing Script", cursive';
+            context.fillStyle = '#D4AF37';
+            context.textAlign = 'center';
+            context.shadowColor = 'rgba(0, 0, 0, 0.8)';
+            context.shadowBlur = 15;
+            context.fillText('Happy New Year', canvas.width / 2, canvas.height - 80);
+            context.shadowBlur = 0;
+            
+            // Add "2027" text
+            context.font = 'bold 100px "Playfair Display", serif';
+            context.fillStyle = '#D4AF37';
+            context.textAlign = 'right';
+            context.shadowColor = 'rgba(0, 0, 0, 0.8)';
+            context.shadowBlur = 20;
+            context.fillText('2027', canvas.width - 50, canvas.height - 50);
+            context.shadowBlur = 0;
+            
+            // Add photo number with premium design
+            context.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            context.beginPath();
+            context.arc(70, 70, 35, 0, Math.PI * 2);
+            context.fill();
+            
+            context.font = 'bold 30px Arial';
+            context.fillStyle = '#D4AF37';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillText(photoCount + 1, 70, 70);
+            
+            // Add decorative element
+            context.font = '40px Arial';
+            context.fillStyle = '#D4AF37';
+            context.fillText('★', 70, 130);
+            
+            // Convert to data URL
+            const photoData = canvas.toDataURL('image/png');
+            
+            // Add to captured photos array
+            capturedPhotos.push({
+                data: photoData,
+                filter: currentFilter,
+                overlay: currentOverlay,
+                timestamp: new Date().toLocaleTimeString()
+            });
+            
+            photoCount++;
+            
+            // Update UI
+            updateCaptureUI();
+            showToast(`Premium photo ${photoCount} captured! ${4 - photoCount} remaining.`);
+            
+            // If we have 4 photos, show collage
+            if (photoCount >= 4) {
+                setTimeout(showCollage, 600);
+            }
+        }
+        
+        // Apply filter to canvas
+        function applyFilterToCanvas(context, width, height) {
+            context.globalCompositeOperation = 'overlay';
+            
+            switch(currentFilter) {
+                case 'gold':
+                    context.fillStyle = 'rgba(212, 175, 55, 0.2)';
+                    context.fillRect(0, 0, width, height);
+                    break;
+                case 'silver':
+                    context.fillStyle = 'rgba(192, 192, 192, 0.2)';
+                    context.fillRect(0, 0, width, height);
+                    break;
+                case 'sparkle':
+                    // Create sparkle effect
+                    for (let i = 0; i < 40; i++) {
+                        const x = Math.random() * width;
+                        const y = Math.random() * height;
+                        const radius = Math.random() * 5 + 2;
+                        
+                        context.beginPath();
+                        context.arc(x, y, radius, 0, Math.PI * 2);
+                        context.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.8 + 0.2})`;
+                        context.fill();
+                    }
+                    break;
+                case 'fireworks':
+                    // Add firework-like bursts
+                    const gradient = context.createRadialGradient(
+                        width/2, height/2, 0,
+                        width/2, height/2, Math.min(width, height)/2
+                    );
+                    gradient.addColorStop(0, 'rgba(212, 175, 55, 0.15)');
+                    gradient.addColorStop(0.5, 'rgba(245, 158, 11, 0.15)');
+                    gradient.addColorStop(1, 'transparent');
+                    
+                    context.fillStyle = gradient;
+                    context.fillRect(0, 0, width, height);
+                    break;
+                case 'festive':
+                    // Add festive gradient
+                    const festiveGradient = context.createLinearGradient(0, 0, width, height);
+                    festiveGradient.addColorStop(0, 'rgba(30, 58, 138, 0.15)');
+                    festiveGradient.addColorStop(1, 'rgba(124, 58, 237, 0.15)');
+                    
+                    context.fillStyle = festiveGradient;
+                    context.fillRect(0, 0, width, height);
+                    break;
+            }
+            
+            context.globalCompositeOperation = 'source-over';
+        }
+        
+        // Apply overlay to canvas
+        function applyOverlayToCanvas(context, width, height) {
+            context.globalAlpha = 0.25;
+            
+            switch(currentOverlay) {
+                case 'fireworks':
+                    // Draw firework-like circles
+                    for (let i = 0; i < 20; i++) {
+                        const x = Math.random() * width;
+                        const y = Math.random() * height;
+                        const radius = Math.random() * 40 + 15;
+                        const colors = ['#D4AF37', '#FFD700', '#FF6347', '#1E90FF'];
+                        const color = colors[Math.floor(Math.random() * colors.length)];
+                        
+                        context.beginPath();
+                        context.arc(x, y, radius, 0, Math.PI * 2);
+                        context.fillStyle = color;
+                        context.fill();
+                    }
+                    break;
+                    
+                case 'confetti':
+                    // Draw confetti shapes
+                    for (let i = 0; i < 60; i++) {
+                        const x = Math.random() * width;
+                        const y = Math.random() * height;
+                        const size = Math.random() * 20 + 8;
+                        const colors = ['#D4AF37', '#FFD700', '#FF6347', '#1E90FF', '#32CD32'];
+                        const color = colors[Math.floor(Math.random() * colors.length)];
+                        
+                        context.fillStyle = color;
+                        
+                        // Draw different confetti shapes
+                        if (Math.random() > 0.5) {
+                            // Circle
+                            context.beginPath();
+                            context.arc(x, y, size/2, 0, Math.PI * 2);
+                            context.fill();
+                        } else {
+                            // Rectangle
+                            context.fillRect(x - size/2, y - size/2, size, size);
+                        }
+                    }
+                    break;
+                    
+                case 'gold':
+                    // Gold gradient overlay
+                    const goldGradient = context.createLinearGradient(0, 0, width, height);
+                    goldGradient.addColorStop(0, 'rgba(212, 175, 55, 0.25)');
+                    goldGradient.addColorStop(0.5, 'rgba(255, 215, 0, 0.25)');
+                    goldGradient.addColorStop(1, 'rgba(255, 140, 0, 0.25)');
+                    
+                    context.fillStyle = goldGradient;
+                    context.fillRect(0, 0, width, height);
+                    break;
+                    
+                case 'sparkle':
+                    // Sparkle overlay
+                    for (let i = 0; i < 120; i++) {
+                        const x = Math.random() * width;
+                        const y = Math.random() * height;
+                        const radius = Math.random() * 4 + 2;
+                        
+                        context.beginPath();
+                        context.arc(x, y, radius, 0, Math.PI * 2);
+                        context.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.6 + 0.4})`;
+                        context.fill();
+                    }
+                    break;
+            }
+            
+            context.globalAlpha = 1.0;
+        }
+        
+        // Update UI after capture
+        function updateCaptureUI() {
+            // Update photo counter
+            photoCounterText.textContent = `${photoCount}/4 Photos`;
+            
+            // Update layout previews to show captured photos
+            const layoutOptions = document.querySelectorAll('.layout-option');
+            layoutOptions.forEach(option => {
+                const cells = option.querySelectorAll('.layout-cell');
+                cells.forEach((cell, index) => {
+                    if (index < photoCount) {
+                        cell.classList.add('filled');
+                        cell.style.backgroundImage = `url(${capturedPhotos[index].data})`;
+                    } else {
+                        cell.classList.remove('filled');
+                        cell.style.backgroundImage = '';
+                    }
+                });
+            });
+            
+            // Update capture button if we have 4 photos
+            if (photoCount >= 4) {
+                captureBtn.innerHTML = '<i class="fas fa-check-circle"></i>';
+                captureBtn.style.background = 'linear-gradient(135deg, #10B981 0%, #059669 100%)';
+                captureBtn.style.boxShadow = '0 5px 25px rgba(16, 185, 129, 0.8), 0 0 30px rgba(212, 175, 55, 0.4) inset';
+            } else {
+                captureBtn.innerHTML = '<i class="fas fa-camera"></i>';
+                captureBtn.style.background = 'radial-gradient(circle, var(--new-year-red) 0%, #8B0000 100%)';
+                captureBtn.style.boxShadow = '0 5px 25px rgba(220, 38, 38, 0.8), 0 0 30px rgba(212, 175, 55, 0.4) inset';
+            }
+        }
+        
+        // Show premium collage
+        function showCollage() {
+            collageDisplay.innerHTML = '';
+            collageDisplay.className = `collage-display layout-${currentLayout}`;
+            
+            // Add print overlay
+            const printOverlay = document.createElement('div');
+            printOverlay.className = `print-overlay overlay-${currentOverlay}-print`;
+            collageDisplay.appendChild(printOverlay);
+            
+            // Add premium print border
+            const printBorder = document.createElement('div');
+            printBorder.className = 'print-border';
+            collageDisplay.appendChild(printBorder);
+            
+            // Add "Happy New Year" title
+            const printTitle = document.createElement('div');
+            printTitle.className = 'print-title';
+            printTitle.textContent = 'Happy New Year';
+            collageDisplay.appendChild(printTitle);
+            
+            // Add subtitle
+            const printSubtitle = document.createElement('div');
+            printSubtitle.className = 'print-subtitle';
+            printSubtitle.textContent = 'Dela Cruz Family Celebration';
+            collageDisplay.appendChild(printSubtitle);
+            
+            // Add large year display
+            const printYearLarge = document.createElement('div');
+            printYearLarge.className = 'print-year-large';
+            printYearLarge.textContent = '2027';
+            collageDisplay.appendChild(printYearLarge);
+            
+            // Add premium logo
+            const premiumLogo = document.createElement('div');
+            premiumLogo.className = 'premium-logo';
+            premiumLogo.textContent = 'Premium Photobooth 2027';
+            collageDisplay.appendChild(premiumLogo);
+            
+            // Add decorative elements
+            const decorations = ['🎉', '✨', '🎊', '🌟', '🎇', '🎆', '🥂', '💫'];
+            for (let i = 0; i < 10; i++) {
+                const decoration = document.createElement('div');
+                decoration.className = 'print-decoration';
+                decoration.style.left = `${Math.random() * 90 + 5}%`;
+                decoration.style.top = `${Math.random() * 90 + 5}%`;
+                decoration.textContent = decorations[i % decorations.length];
+                decoration.style.fontSize = `${Math.random() * 25 + 20}px`;
+                decoration.style.transform = `rotate(${Math.random() * 360}deg)`;
+                collageDisplay.appendChild(decoration);
+            }
+            
+            // Create cells based on layout
+            for (let i = 0; i < 4; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'collage-cell';
+                if (capturedPhotos[i]) {
+                    cell.style.backgroundImage = `url(${capturedPhotos[i].data})`;
+                }
+                
+                const cellNumber = document.createElement('div');
+                cellNumber.className = 'cell-number';
+                cellNumber.textContent = i + 1;
+                cell.appendChild(cellNumber);
+                
+                collageDisplay.appendChild(cell);
+            }
+            
+            // Show the collage section
+            photoCollage.classList.add('active');
+            
+            // Scroll to collage
+            setTimeout(() => {
+                photoCollage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 150);
+            
+            showToast('Your premium 2027 photobooth collage is ready! Download your keepsake.');
+        }
+        
+        // Initialize overlays
+        function initOverlays() {
+            const overlays = [
+                { id: 'fireworks', name: 'Fireworks', className: 'overlay-fireworks', icon: '🎆' },
+                { id: 'confetti', name: 'Confetti', className: 'overlay-confetti', icon: '🎉' },
+                { id: 'gold', name: 'Golden Glow', className: 'overlay-gold', icon: '🌟' },
+                { id: 'sparkle', name: 'Sparkle Magic', className: 'overlay-sparkle', icon: '✨' }
+            ];
+            
+            const overlaysGrid = document.getElementById('overlays-grid');
+            
+            overlays.forEach(overlay => {
+                const overlayElement = document.createElement('div');
+                overlayElement.className = `overlay-option ${overlay.id === 'fireworks' ? 'active' : ''}`;
+                overlayElement.dataset.overlay = overlay.id;
+                overlayElement.setAttribute('aria-label', `Apply ${overlay.name} overlay`);
+                
+                overlayElement.innerHTML = `
+                    <div class="overlay-preview ${overlay.className}">
+                        <div class="overlay-preview-content">
+                            <span class="overlay-icon">${overlay.icon}</span>
+                        </div>
+                    </div>
+                    <div class="overlay-name">${overlay.name}</div>
+                `;
+                
+                overlayElement.addEventListener('click', () => {
+                    // Remove active class from all overlays
+                    document.querySelectorAll('.overlay-option').forEach(o => {
+                        o.classList.remove('active');
+                    });
+                    
+                    // Add active class to selected overlay
+                    overlayElement.classList.add('active');
+                    
+                    // Update current overlay
+                    currentOverlay = overlay.id;
+                    
+                    // Start appropriate animation
+                    startFireworksAnimation();
+                    
+                    // Show feedback
+                    showToast(`Premium ${overlay.name} overlay applied`);
+                });
+                
+                overlaysGrid.appendChild(overlayElement);
+            });
+        }
+        
+        // Initialize filters
+        function initFilters() {
+            const filters = [
+                { id: 'none', name: 'Classic', color: 'filter-none', icon: '👑' },
+                { id: 'gold', name: 'Golden', color: 'filter-gold', icon: '🥇' },
+                { id: 'silver', name: 'Silver', color: 'filter-silver', icon: '🥈' },
+                { id: 'sparkle', name: 'Sparkle', color: 'filter-sparkle', icon: '✨' },
+                { id: 'fireworks', name: 'Fireworks', color: 'filter-fireworks', icon: '🎆' },
+                { id: 'festive', name: 'Festive', color: 'filter-festive', icon: '🎉' }
+            ];
+            
+            const filtersGrid = document.getElementById('filters-grid');
+            
+            filters.forEach(filter => {
+                const filterElement = document.createElement('div');
+                filterElement.className = `filter-option ${filter.id === 'none' ? 'active' : ''}`;
+                filterElement.dataset.filter = filter.id;
+                filterElement.setAttribute('aria-label', `Apply ${filter.name} filter`);
+                
+                filterElement.innerHTML = `
+                    <div class="filter-preview ${filter.color}">
+                        <span class="filter-icon">${filter.icon}</span>
+                    </div>
+                    <div class="filter-name">${filter.name}</div>
+                `;
+                
+                filterElement.addEventListener('click', () => {
+                    // Remove active class from all filters
+                    document.querySelectorAll('.filter-option').forEach(f => {
+                        f.classList.remove('active');
+                    });
+                    
+                    // Add active class to selected filter
+                    filterElement.classList.add('active');
+                    
+                    // Update current filter
+                    currentFilter = filter.id;
+                    
+                    // Show feedback
+                    showToast(`Premium ${filter.name} filter applied`);
+                });
+                
+                filtersGrid.appendChild(filterElement);
+            });
+        }
+        
+        // Initialize layout options
+        function initLayouts() {
+            const layouts = [
+                { id: '2x2', name: 'Classic Grid', className: 'layout-2x2' },
+                { id: '1x4', name: 'Horizontal', className: 'layout-1x4' },
+                { id: '3-1', name: 'Large Top', className: 'layout-3-1' },
+                { id: '1-3', name: 'Large Bottom', className: 'layout-1-3' }
+            ];
+            
+            const layoutsContainer = document.getElementById('collage-layouts');
+            
+            layouts.forEach(layout => {
+                const layoutElement = document.createElement('div');
+                layoutElement.className = `layout-option ${layout.id === '2x2' ? 'active' : ''}`;
+                layoutElement.dataset.layout = layout.id;
+                layoutElement.setAttribute('aria-label', `Select ${layout.name} layout`);
+                
+                layoutElement.innerHTML = `
+                    <div class="layout-preview ${layout.className}">
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                        <div class="layout-cell"></div>
+                    </div>
+                    <div class="layout-name">${layout.name}</div>
+                `;
+                
+                layoutElement.addEventListener('click', () => {
+                    // Remove active class from all layouts
+                    document.querySelectorAll('.layout-option').forEach(l => {
+                        l.classList.remove('active');
+                    });
+                    
+                    // Add active class to selected layout
+                    layoutElement.classList.add('active');
+                    
+                    // Update current layout
+                    currentLayout = layout.id;
+                    
+                    // Show feedback
+                    showToast(`Premium ${layout.name} layout selected`);
+                    
+                    // If collage is already shown, update it
+                    if (photoCount >= 4) {
+                        showCollage();
+                    }
+                });
+                
+                layoutsContainer.appendChild(layoutElement);
+            });
+        }
+        
+        // Download premium collage
+        function downloadCollage() {
+            if (capturedPhotos.length < 4) {
+                showToast('Please capture 4 premium photos first!', 2000);
+                return;
+            }
+            
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            
+            // Set canvas size for high-quality print (8x10 inches at 300 DPI)
+            canvas.width = 2400;  // 8 inches * 300 DPI
+            canvas.height = 3000; // 10 inches * 300 DPI
+            
+            // Draw premium background
+            const backgroundGradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
+            backgroundGradient.addColorStop(0, '#0a0e1a');
+            backgroundGradient.addColorStop(0.5, '#1a2b5a');
+            backgroundGradient.addColorStop(1, '#3a1b6a');
+            context.fillStyle = backgroundGradient;
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add subtle texture
+            context.globalAlpha = 0.03;
+            for (let i = 0; i < 1000; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const radius = Math.random() * 3 + 1;
+                
+                context.beginPath();
+                context.arc(x, y, radius, 0, Math.PI * 2);
+                context.fillStyle = '#FFFFFF';
+                context.fill();
+            }
+            context.globalAlpha = 1.0;
+            
+            // Add decorative border
+            const borderGradient = context.createLinearGradient(0, 0, canvas.width, 0);
+            borderGradient.addColorStop(0, '#D4AF37');
+            borderGradient.addColorStop(0.5, '#FFD700');
+            borderGradient.addColorStop(1, '#D4AF37');
+            
+            context.strokeStyle = borderGradient;
+            context.lineWidth = 40;
+            context.strokeRect(50, 50, canvas.width - 100, canvas.height - 100);
+            
+            // Add corner decorations
+            const cornerSize = 80;
+            context.strokeStyle = '#D4AF37';
+            context.lineWidth = 15;
+            
+            // Draw all four corners
+            [ [60, 60], [canvas.width - 60, 60], [60, canvas.height - 60], [canvas.width - 60, canvas.height - 60] ].forEach(([x, y], index) => {
+                context.save();
+                context.translate(x, y);
+                if (index === 1) context.rotate(Math.PI / 2);
+                if (index === 2) context.rotate(-Math.PI / 2);
+                if (index === 3) context.rotate(Math.PI);
+                
+                context.beginPath();
+                context.moveTo(0, cornerSize);
+                context.lineTo(0, 0);
+                context.lineTo(cornerSize, 0);
+                context.stroke();
+                context.restore();
+            });
+            
+            // Add "Happy New Year" title with premium styling
+            context.font = 'bold 160px "Dancing Script", cursive';
+            
+            // Create gradient for title
+            const titleGradient = context.createLinearGradient(0, 200, canvas.width, 200);
+            titleGradient.addColorStop(0, '#D4AF37');
+            titleGradient.addColorStop(0.5, '#FFD700');
+            titleGradient.addColorStop(1, '#D4AF37');
+            
+            context.fillStyle = titleGradient;
+            context.textAlign = 'center';
+            context.shadowColor = 'rgba(0, 0, 0, 0.8)';
+            context.shadowBlur = 30;
+            context.fillText('Happy New Year', canvas.width / 2, 220);
+            context.shadowBlur = 0;
+            
+            // Add "2027" with premium design
+            context.font = 'bold 200px "Playfair Display", serif';
+            context.fillStyle = '#D4AF37';
+            context.textAlign = 'center';
+            context.shadowColor = 'rgba(0, 0, 0, 0.7)';
+            context.shadowBlur = 25;
+            context.fillText('2027', canvas.width / 2, canvas.height - 150);
+            context.shadowBlur = 0;
+            
+            // Add subtitle
+            context.font = 'bold 40px "Montserrat", sans-serif';
+            context.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            context.textAlign = 'center';
+            context.fillText('Dela Cruz Family Celebration', canvas.width / 2, 320);
+            
+            // Draw collage based on layout with spacing for premium look
+            const collageWidth = 2000;
+            const collageHeight = 1200;
+            const collageStartX = (canvas.width - collageWidth) / 2;
+            const collageStartY = 450;
+            
+            // Add background for collage area
+            context.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            context.fillRect(collageStartX - 40, collageStartY - 40, collageWidth + 80, collageHeight + 80);
+            
+            // Draw collage cells
+            const cellPositions = getCellPositions(currentLayout, collageWidth, collageHeight);
+            
+            let imagesLoaded = 0;
+            cellPositions.forEach((pos, index) => {
+                if (capturedPhotos[index]) {
+                    const img = new Image();
+                    img.onload = function() {
+                        // Draw cell with shadow
+                        context.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                        context.shadowBlur = 20;
+                        context.shadowOffsetY = 10;
+                        
+                        context.drawImage(
+                            img, 
+                            collageStartX + pos.x, 
+                            collageStartY + pos.y, 
+                            pos.width, 
+                            pos.height
+                        );
+                        
+                        context.shadowBlur = 0;
+                        context.shadowOffsetY = 0;
+                        
+                        // Draw cell border with gradient
+                        const cellBorderGradient = context.createLinearGradient(
+                            collageStartX + pos.x, 
+                            collageStartY + pos.y,
+                            collageStartX + pos.x + pos.width,
+                            collageStartY + pos.y + pos.height
+                        );
+                        cellBorderGradient.addColorStop(0, '#D4AF37');
+                        cellBorderGradient.addColorStop(0.5, '#FFD700');
+                        cellBorderGradient.addColorStop(1, '#D4AF37');
+                        
+                        context.strokeStyle = cellBorderGradient;
+                        context.lineWidth = 10;
+                        context.strokeRect(
+                            collageStartX + pos.x, 
+                            collageStartY + pos.y, 
+                            pos.width, 
+                            pos.height
+                        );
+                        
+                        // Draw premium photo number
+                        context.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                        context.beginPath();
+                        context.arc(
+                            collageStartX + pos.x + 60, 
+                            collageStartY + pos.y + 60, 
+                            45, 0, Math.PI * 2
+                        );
+                        context.fill();
+                        
+                        context.font = 'bold 40px "Montserrat", sans-serif';
+                        context.fillStyle = '#D4AF37';
+                        context.textAlign = 'center';
+                        context.textBaseline = 'middle';
+                        context.fillText(
+                            index + 1, 
+                            collageStartX + pos.x + 60, 
+                            collageStartY + pos.y + 60
+                        );
+                        
+                        imagesLoaded++;
+                        
+                        // When all images are loaded, add final touches and trigger download
+                        if (imagesLoaded === 4) {
+                            // Add decorative elements around the collage
+                            const decorations = ['🎉', '✨', '🎊', '🌟', '🎇', '🎆', '🥂'];
+                            context.font = '60px Arial';
+                            context.fillStyle = '#D4AF37';
+                            context.textAlign = 'center';
+                            
+                            for (let i = 0; i < 7; i++) {
+                                const angle = (i / 7) * Math.PI * 2;
+                                const radius = 250;
+                                const x = canvas.width / 2 + Math.cos(angle) * radius;
+                                const y = collageStartY + collageHeight / 2 + Math.sin(angle) * radius;
+                                
+                                context.save();
+                                context.translate(x, y);
+                                context.rotate(angle);
+                                context.fillText(decorations[i], 0, 0);
+                                context.restore();
+                            }
+                            
+                            // Add footer text
+                            context.font = '30px "Montserrat", sans-serif';
+                            context.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                            context.textAlign = 'center';
+                            context.fillText('Premium Photobooth 2027 • Dela Cruz Family', canvas.width / 2, canvas.height - 70);
+                            context.fillText('Capture the Moment, Celebrate the Year', canvas.width / 2, canvas.height - 30);
+                            
+                            // Trigger download
+                            const link = document.createElement('a');
+                            const timestamp = new Date().toISOString().slice(0, 19).replace(/[:.]/g, '-');
+                            link.download = `dela-cruz-premium-photobooth-2027-${timestamp}.png`;
+                            link.href = canvas.toDataURL('image/png');
+                            link.click();
+                            
+                            showToast('Premium photobooth collage downloaded! Ready for printing.', 3000);
+                        }
+                    };
+                    img.src = capturedPhotos[index].data;
+                }
+            });
+        }
+        
+        // Get cell positions based on layout
+        function getCellPositions(layout, containerWidth, containerHeight) {
+            const positions = [];
+            const spacing = 20; // Add spacing between cells for premium look
+            
+            switch(layout) {
+                case '2x2':
+                    const cellWidth2x2 = (containerWidth - spacing) / 2;
+                    const cellHeight2x2 = (containerHeight - spacing) / 2;
+                    
+                    for (let row = 0; row < 2; row++) {
+                        for (let col = 0; col < 2; col++) {
+                            positions.push({
+                                x: col * (cellWidth2x2 + spacing/2),
+                                y: row * (cellHeight2x2 + spacing/2),
+                                width: cellWidth2x2,
+                                height: cellHeight2x2
+                            });
+                        }
+                    }
+                    break;
+                    
+                case '1x4':
+                    const cellWidth1x4 = (containerWidth - spacing * 3) / 4;
+                    
+                    for (let i = 0; i < 4; i++) {
+                        positions.push({
+                            x: i * (cellWidth1x4 + spacing),
+                            y: 0,
+                            width: cellWidth1x4,
+                            height: containerHeight
+                        });
+                    }
+                    break;
+                    
+                case '3-1':
+                    const topHeight = ((containerHeight - spacing) * 2) / 3;
+                    const bottomHeight = (containerHeight - spacing) / 3;
+                    const topWidth = (containerWidth - spacing) / 2;
+                    const bottomWidth = (containerWidth - spacing) / 2;
+                    
+                    // Top cells
+                    positions.push({ x: 0, y: 0, width: topWidth, height: topHeight });
+                    positions.push({ x: topWidth + spacing/2, y: 0, width: topWidth, height: topHeight });
+                    
+                    // Bottom cells
+                    positions.push({ x: 0, y: topHeight + spacing/2, width: bottomWidth, height: bottomHeight });
+                    positions.push({ x: bottomWidth + spacing/2, y: topHeight + spacing/2, width: bottomWidth, height: bottomHeight });
+                    break;
+                    
+                case '1-3':
+                    const topHeight2 = (containerHeight - spacing) / 3;
+                    const bottomHeight2 = ((containerHeight - spacing) * 2) / 3;
+                    const topWidth2 = (containerWidth - spacing) / 2;
+                    const bottomWidth2 = (containerWidth - spacing) / 2;
+                    
+                    // Top cells
+                    positions.push({ x: 0, y: 0, width: topWidth2, height: topHeight2 });
+                    positions.push({ x: topWidth2 + spacing/2, y: 0, width: topWidth2, height: topHeight2 });
+                    
+                    // Bottom cells
+                    positions.push({ x: 0, y: topHeight2 + spacing/2, width: bottomWidth2, height: bottomHeight2 });
+                    positions.push({ x: bottomWidth2 + spacing/2, y: topHeight2 + spacing/2, width: bottomWidth2, height: bottomHeight2 });
+                    break;
+            }
+            
+            return positions;
+        }
+        
+        // Reset photobooth
+        function resetPhotobooth() {
+            capturedPhotos = [];
+            photoCount = 0;
+            
+            // Update layout previews
+            document.querySelectorAll('.layout-cell').forEach(cell => {
+                cell.classList.remove('filled');
+                cell.style.backgroundImage = '';
+            });
+            
+            // Update UI
+            updateCaptureUI();
+            
+            // Hide collage section
+            photoCollage.classList.remove('active');
+            
+            // Scroll back to camera
+            setTimeout(() => {
+                document.querySelector('.camera-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 200);
+            
+            showToast('Premium photobooth reset! Ready for new memories.', 2000);
+        }
+        
+        // Toggle grid visibility
+        function toggleGrid() {
+            gridVisible = !gridVisible;
+            if (gridVisible) {
+                cameraGuide.style.display = 'block';
+                toggleGridBtn.innerHTML = '<i class="fas fa-th"></i>';
+                toggleGridBtn.style.color = '#D4AF37';
+                showToast('Premium framing grid enabled');
+            } else {
+                cameraGuide.style.display = 'none';
+                toggleGridBtn.innerHTML = '<i class="fas fa-th-large"></i>';
+                toggleGridBtn.style.color = 'white';
+                showToast('Premium framing grid disabled');
+            }
+        }
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Start countdown timer
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+            
+            // Initialize overlays, filters and layouts
+            initOverlays();
+            initFilters();
+            initLayouts();
+            
+            // Initialize camera
+            initCamera();
+            
+            // Event listeners
+            captureBtn.addEventListener('click', capturePhoto);
+            
+            switchCameraBtn.addEventListener('click', function() {
+                facingMode = facingMode === 'user' ? 'environment' : 'user';
+                initCamera();
+                showToast(facingMode === 'user' ? 'Front camera activated' : 'Rear camera activated');
+            });
+            
+            toggleFlashBtn.addEventListener('click', function() {
+                flashOn = !flashOn;
+                this.innerHTML = flashOn ? '<i class="fas fa-bolt" style="color: #D4AF37;"></i>' : '<i class="fas fa-bolt"></i>';
+                showToast(flashOn ? 'Premium flash enabled' : 'Premium flash disabled');
+            });
+            
+            toggleGridBtn.addEventListener('click', toggleGrid);
+            
+            downloadBtn.addEventListener('click', downloadCollage);
+            
+            resetBtn.addEventListener('click', resetPhotobooth);
+            
+            // Touch optimizations
+            document.querySelectorAll('button, .capture-btn, .secondary-btn, .layout-option, .filter-option, .overlay-option').forEach(btn => {
+                btn.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    this.style.transform = 'scale(0.95)';
+                }, { passive: false });
+                
+                btn.addEventListener('touchend', function() {
+                    this.style.transform = '';
+                });
+            });
+            
+            // Initial welcome message
+            setTimeout(() => {
+                showToast('Welcome to Dela Cruz Premium 2027 Photobooth!', 3000);
+            }, 1500);
+            
+            // Handle orientation changes
+            window.addEventListener('orientationchange', function() {
+                setTimeout(initCamera, 400);
+            });
+        });
+    </script>
+</body>
+</html>
