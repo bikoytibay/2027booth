@@ -25,6 +25,8 @@
         * {
             -webkit-tap-highlight-color: transparent;
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
         
         body {
@@ -398,47 +400,53 @@
             opacity: 1;
         }
         
-        .mobile-preview {
+        /* FIXED: Layout preview styles */
+        .layout-preview {
             height: 80px;
             width: 100%;
             background: rgba(255, 255, 255, 0.08);
             border-radius: 8px;
             display: grid;
-            gap: 3px;
-            padding: 3px;
+            gap: 2px;
+            padding: 2px;
             border: 1px solid rgba(212, 175, 55, 0.2);
             margin-bottom: 0.5rem;
+            overflow: hidden;
         }
         
         .layout-2x2 {
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr 1fr;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
         }
         
         .layout-1x4 {
-            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: 1fr;
         }
         
         .layout-3-1 {
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, 1fr);
             grid-template-rows: 2fr 1fr;
         }
         
         .layout-1-3 {
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, 1fr);
             grid-template-rows: 1fr 2fr;
         }
         
         .layout-cell {
             background: rgba(255, 255, 255, 0.15);
-            border-radius: 4px;
+            border-radius: 3px;
             transition: all 0.3s;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
         }
         
         .layout-cell.filled {
-            background-size: cover;
-            background-position: center;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
             border: 2px solid var(--premium-gold);
             box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
         }
@@ -535,7 +543,7 @@
             background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%);
         }
         
-        /* Collage display - mobile optimized */
+        /* Collage display - FIXED for proper rendering */
         .photo-collage {
             background: linear-gradient(135deg, rgba(0, 0, 0, 0.85) 0%, rgba(30, 58, 138, 0.85) 100%);
             border-radius: 15px;
@@ -559,6 +567,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
+        /* FIXED: Collage display styles */
         .collage-display {
             height: 50vh;
             min-height: 350px;
@@ -575,23 +584,31 @@
             box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.7);
         }
         
-        .collage-display::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                linear-gradient(90deg, rgba(212, 175, 55, 0.05) 1px, transparent 1px) 0 0 / 25px 25px,
-                linear-gradient(rgba(212, 175, 55, 0.05) 1px, transparent 1px) 0 0 / 25px 25px;
-            pointer-events: none;
-            z-index: 1;
+        /* Dynamic collage layouts */
+        .collage-layout-2x2 {
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+        }
+        
+        .collage-layout-1x4 {
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: 1fr;
+        }
+        
+        .collage-layout-3-1 {
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: 2fr 1fr;
+        }
+        
+        .collage-layout-1-3 {
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: 1fr 2fr;
         }
         
         .collage-cell {
-            background-size: cover;
-            background-position: center;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
             border-radius: 8px;
             position: relative;
             overflow: hidden;
@@ -1006,7 +1023,7 @@
                 min-height: 95px;
             }
             
-            .mobile-preview, .overlay-preview {
+            .layout-preview, .overlay-preview {
                 height: 70px;
             }
             
@@ -1127,6 +1144,14 @@
             margin-top: 0.5rem;
             padding: 0.5rem;
             border-top: 1px solid rgba(212, 175, 55, 0.1);
+        }
+        
+        /* Fix for image rendering */
+        .image-fix {
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
+            -ms-interpolation-mode: nearest-neighbor;
         }
     </style>
 </head>
@@ -1867,7 +1892,7 @@
             context.globalAlpha = 1.0;
         }
         
-        // Update UI after capture
+        // Update UI after capture - FIXED for proper preview display
         function updateCaptureUI() {
             photoCounterText.textContent = `${photoCount}/4 Photos`;
             
@@ -1879,7 +1904,14 @@
                         cell.classList.add('filled');
                         // Use a timeout to ensure the image is loaded
                         setTimeout(() => {
-                            cell.style.backgroundImage = `url(${capturedPhotos[index].data})`;
+                            if (capturedPhotos[index]) {
+                                // Create an image object to ensure proper loading
+                                const img = new Image();
+                                img.onload = function() {
+                                    cell.style.backgroundImage = `url(${capturedPhotos[index].data})`;
+                                };
+                                img.src = capturedPhotos[index].data;
+                            }
                         }, 50);
                     } else {
                         cell.classList.remove('filled');
@@ -1905,67 +1937,25 @@
             }
         }
         
-        // Show optimized collage
+        // Show optimized collage - FIXED for proper rendering
         function showCollage() {
             collageDisplay.innerHTML = '';
-            collageDisplay.className = `collage-display layout-${currentLayout}`;
-            
-            // Add print overlay
-            const printOverlay = document.createElement('div');
-            printOverlay.className = `print-overlay overlay-${currentOverlay}-print`;
-            collageDisplay.appendChild(printOverlay);
-            
-            // Add optimized print border
-            const printBorder = document.createElement('div');
-            printBorder.className = 'print-border';
-            collageDisplay.appendChild(printBorder);
-            
-            // Add "Happy New Year" title
-            const printTitle = document.createElement('div');
-            printTitle.className = 'print-title';
-            printTitle.textContent = 'Happy New Year';
-            collageDisplay.appendChild(printTitle);
-            
-            // Add subtitle
-            const printSubtitle = document.createElement('div');
-            printSubtitle.className = 'print-subtitle';
-            printSubtitle.textContent = 'Dela Cruz Family';
-            collageDisplay.appendChild(printSubtitle);
-            
-            // Add large year display
-            const printYearLarge = document.createElement('div');
-            printYearLarge.className = 'print-year-large';
-            printYearLarge.textContent = '2027';
-            collageDisplay.appendChild(printYearLarge);
-            
-            // Add premium logo
-            const premiumLogo = document.createElement('div');
-            premiumLogo.className = 'premium-logo';
-            premiumLogo.textContent = 'Premium Photobooth';
-            collageDisplay.appendChild(premiumLogo);
-            
-            // Add decorative elements
-            const decorations = ['🎉', '✨', '🎊', '🌟', '🎇', '🥂'];
-            for (let i = 0; i < 6; i++) {
-                const decoration = document.createElement('div');
-                decoration.className = 'print-decoration';
-                decoration.style.left = `${Math.random() * 90 + 5}%`;
-                decoration.style.top = `${Math.random() * 90 + 5}%`;
-                decoration.textContent = decorations[i];
-                decoration.style.fontSize = `${Math.random() * 20 + 15}px`;
-                decoration.style.transform = `rotate(${Math.random() * 360}deg)`;
-                collageDisplay.appendChild(decoration);
-            }
+            // Apply the correct layout class
+            collageDisplay.className = 'collage-display collage-layout-' + currentLayout;
             
             // Create cells based on layout
-            for (let i = 0; i < 4; i++) {
+            const cellCount = 4;
+            for (let i = 0; i < cellCount; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'collage-cell';
+                
                 if (capturedPhotos[i]) {
-                    // Use timeout to ensure image loads
-                    setTimeout(() => {
+                    // Create an image object to ensure proper loading
+                    const img = new Image();
+                    img.onload = function() {
                         cell.style.backgroundImage = `url(${capturedPhotos[i].data})`;
-                    }, 100);
+                    };
+                    img.src = capturedPhotos[i].data;
                 }
                 
                 const cellNumber = document.createElement('div');
@@ -2114,7 +2104,7 @@
             });
         }
         
-        // Initialize layout options - Fixed for mobile touch
+        // Initialize layout options - Fixed for mobile touch and preview
         function initLayouts() {
             const layouts = [
                 { id: '2x2', name: 'Classic Grid', className: 'layout-2x2' },
@@ -2134,7 +2124,7 @@
                 layoutElement.tabIndex = 0;
                 
                 layoutElement.innerHTML = `
-                    <div class="mobile-preview ${layout.className}">
+                    <div class="layout-preview ${layout.className}">
                         <div class="layout-cell"></div>
                         <div class="layout-cell"></div>
                         <div class="layout-cell"></div>
@@ -2305,17 +2295,43 @@
                 return;
             }
             
-            cellPositions.forEach((pos, index) => {
-                if (capturedPhotos[index]) {
+            // Load all images first, then draw
+            const images = [];
+            let loadedImages = 0;
+            
+            capturedPhotos.forEach((photo, index) => {
+                if (index < 4) {
                     const img = new Image();
                     img.onload = function() {
+                        images[index] = img;
+                        loadedImages++;
+                        
+                        if (loadedImages === totalImages) {
+                            // All images loaded, draw them
+                            drawCollageToCanvas();
+                        }
+                    };
+                    img.onerror = function() {
+                        console.error('Error loading image for collage');
+                        loadedImages++;
+                        if (loadedImages === totalImages) {
+                            drawCollageToCanvas();
+                        }
+                    };
+                    img.src = photo.data;
+                }
+            });
+            
+            function drawCollageToCanvas() {
+                cellPositions.forEach((pos, index) => {
+                    if (images[index]) {
                         // Draw cell with optimized shadow
                         context.shadowColor = 'rgba(0, 0, 0, 0.4)';
                         context.shadowBlur = 15;
                         context.shadowOffsetY = 8;
                         
                         context.drawImage(
-                            img, 
+                            images[index], 
                             collageStartX + pos.x, 
                             collageStartY + pos.y, 
                             pos.width, 
@@ -2364,74 +2380,57 @@
                             collageStartX + pos.x + 50, 
                             collageStartY + pos.y + 50
                         );
-                        
-                        imagesLoaded++;
-                        
-                        // When all images are loaded, add final touches and trigger download
-                        if (imagesLoaded === totalImages) {
-                            // Add optimized decorative elements
-                            const decorations = ['🎉', '✨', '🎊', '🌟', '🎇', '🥂'];
-                            context.font = '45px Arial';
-                            context.fillStyle = '#D4AF37';
-                            context.textAlign = 'center';
-                            
-                            // Position decorations symmetrically
-                            for (let i = 0; i < 6; i++) {
-                                const angle = (i / 6) * Math.PI * 2;
-                                const radius = 200;
-                                const x = canvas.width / 2 + Math.cos(angle) * radius;
-                                const y = collageStartY + collageHeight / 2 + Math.sin(angle) * radius;
-                                
-                                context.save();
-                                context.translate(x, y);
-                                context.rotate(angle);
-                                context.fillText(decorations[i], 0, 0);
-                                context.restore();
-                            }
-                            
-                            // Add optimized footer text
-                            context.font = '24px "Montserrat", sans-serif';
-                            context.fillStyle = 'rgba(255, 255, 255, 0.7)';
-                            context.textAlign = 'center';
-                            context.fillText('Premium Photobooth 2027 • Dela Cruz Family', canvas.width / 2, canvas.height - 60);
-                            context.fillText('Capture the Moment, Celebrate the Year', canvas.width / 2, canvas.height - 25);
-                            
-                            // Trigger download
-                            try {
-                                const link = document.createElement('a');
-                                const timestamp = new Date().toISOString().slice(0, 19).replace(/[:.]/g, '-');
-                                link.download = `dela-cruz-2027-photobooth-${timestamp}.jpg`;
-                                
-                                // Convert to data URL with quality parameter
-                                const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-                                link.href = dataUrl;
-                                
-                                // Use a timeout to ensure everything is ready
-                                setTimeout(() => {
-                                    link.click();
-                                    showToast('Premium photobooth collage downloaded!', 3000);
-                                }, 100);
-                                
-                            } catch (e) {
-                                console.error('Error downloading image:', e);
-                                showToast('Error downloading collage. Please try again.', 3000);
-                            }
-                        }
-                    };
+                    }
+                });
+                
+                // Add optimized decorative elements
+                const decorations = ['🎉', '✨', '🎊', '🌟', '🎇', '🥂'];
+                context.font = '45px Arial';
+                context.fillStyle = '#D4AF37';
+                context.textAlign = 'center';
+                
+                // Position decorations symmetrically
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI * 2;
+                    const radius = 200;
+                    const x = canvas.width / 2 + Math.cos(angle) * radius;
+                    const y = collageStartY + collageHeight / 2 + Math.sin(angle) * radius;
                     
-                    img.onerror = function() {
-                        console.error('Error loading image for collage');
-                        imagesLoaded++;
-                        if (imagesLoaded === totalImages) {
-                            showToast('Error loading some photos. Download may be incomplete.', 3000);
-                        }
-                    };
-                    
-                    img.src = capturedPhotos[index].data;
-                } else {
-                    imagesLoaded++;
+                    context.save();
+                    context.translate(x, y);
+                    context.rotate(angle);
+                    context.fillText(decorations[i], 0, 0);
+                    context.restore();
                 }
-            });
+                
+                // Add optimized footer text
+                context.font = '24px "Montserrat", sans-serif';
+                context.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                context.textAlign = 'center';
+                context.fillText('Premium Photobooth 2027 • Dela Cruz Family', canvas.width / 2, canvas.height - 60);
+                context.fillText('Capture the Moment, Celebrate the Year', canvas.width / 2, canvas.height - 25);
+                
+                // Trigger download
+                try {
+                    const link = document.createElement('a');
+                    const timestamp = new Date().toISOString().slice(0, 19).replace(/[:.]/g, '-');
+                    link.download = `dela-cruz-2027-photobooth-${timestamp}.jpg`;
+                    
+                    // Convert to data URL with quality parameter
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                    link.href = dataUrl;
+                    
+                    // Use a timeout to ensure everything is ready
+                    setTimeout(() => {
+                        link.click();
+                        showToast('Premium photobooth collage downloaded!', 3000);
+                    }, 100);
+                    
+                } catch (e) {
+                    console.error('Error downloading image:', e);
+                    showToast('Error downloading collage. Please try again.', 3000);
+                }
+            }
         }
         
         // Get optimized cell positions for perfect ratio
